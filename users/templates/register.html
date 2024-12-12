@@ -1,0 +1,85 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}用户注册{% endblock %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        .error-msg {
+            color: red;
+            font-size: 12px;
+            position: absolute;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="account">
+            <div class="title">用户注册</div>
+            <form id="regForm" method="POST" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.name == 'birthday' %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <input type="date" id="{{ field.id_for_label }}" name="{{ field.name }}"
+                                   class="form-control" value="{{ field.value|default:'' }}">
+                            <span class="error-msg"></span>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <span class="error-msg"></span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="row">
+                    <div class="col-xs-3">
+                        <button id='btnSubmit' type="button" class="btn btn-primary"> 注 册</button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            bindClickSubmit();
+        });
+
+
+        function bindClickSubmit() {
+            $('#btnSubmit').click(function () {
+                event.preventDefault();
+
+                $('.error-msg').empty();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "/register/",
+                    data: $('#regForm').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.href = res.data;
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next('.error-msg').text(value[0]);
+                            })
+                        }
+                    }
+
+                })
+            })
+        }
+
+    </script>
+{% endblock %}

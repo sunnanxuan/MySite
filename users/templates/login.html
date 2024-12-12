@@ -1,0 +1,75 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}用户登录{% endblock %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        .error-msg {
+            color: red;
+            font-size: 12px;
+            position: absolute;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="account">
+            <div class="title">用户登录</div>
+            <form id="loginForm" method="POST" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <span class="error-msg">{{ field.errors}}</span>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-xs-3">
+                        <button id='btnSubmit' type="button" class="btn btn-primary">登录</button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            bindClickSubmit();
+        });
+
+        function bindClickSubmit() {
+            $('#btnSubmit').click(function () {
+                event.preventDefault();
+
+                $('.error-msg').empty();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "/login/",
+                    data: $('#loginForm').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.href = res.data;
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next('.error-msg').text(value[0]);
+                            })
+                        }
+                    }
+
+                })
+            })
+        }
+
+    </script>
+{% endblock %}
