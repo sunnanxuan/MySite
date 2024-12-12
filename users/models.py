@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
+from utils.user_avatar_upload_to import user_avatar_upload_to
 
 # Create your models here.
 
@@ -12,8 +13,11 @@ class UserProfile(models.Model):
     nickname=models.CharField(verbose_name='昵称',max_length=23,blank=True,null=True)
     birthday=models.DateTimeField(verbose_name='生日',blank=True,null=True)
     gender=models.CharField(verbose_name='性别', choices=USER_GENDER_TYPE,max_length=6,default='male')
-    image=models.ImageField(verbose_name='用户头像',upload_to='image/%Y/%m',default='image/default.jpg',max_length=255)
+    image=models.ImageField(verbose_name='用户头像',upload_to=user_avatar_upload_to,default='image/default.jpg',max_length=255)
     desc=models.TextField(verbose_name='个人简介',max_length=200,blank=True,default='')
+
+    def __str__(self):
+        return f"{self.owner.username}'s Profile"
 
 
 

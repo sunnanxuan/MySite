@@ -19,7 +19,7 @@
     <div class="container">
         <div class="account">
             <div class="title">用户注册</div>
-            <form id="regForm" method="POST" novalidate>
+            <form id="regForm" method="POST" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
                 {% for field in form %}
                     {% if field.name == 'birthday' %}
@@ -62,11 +62,15 @@
 
                 $('.error-msg').empty();
 
+                var formData = new FormData($('#regForm')[0]);
+
                 $.ajax({
                     type: 'POST',
                     url: "/register/",
-                    data: $('#regForm').serialize(),
+                    data: formData,
                     dataType: "JSON",
+                    processData: false,  // 禁止 jQuery 自动处理数据
+                    contentType: false,  // 禁止 jQuery 自动设置 Content-Type
                     success: function (res) {
                         if (res.status) {
                             location.href = res.data;

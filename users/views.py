@@ -61,7 +61,8 @@ def register(request):
         form = RegisterModelForm()
         return render(request, 'register.html', {'form': form})
 
-    form = RegisterModelForm(data=request.POST)
+    form = RegisterModelForm(data=request.POST, files=request.FILES)
+
     if form.is_valid():
         cleaned_data = form.cleaned_data
         user_data = {
@@ -74,6 +75,7 @@ def register(request):
             'birthday': cleaned_data['birthday'],
             'image': cleaned_data['image'],
         }
+
         with transaction.atomic():
             user = User.objects.create_user(**user_data)
             # 邮件暂时无法发送，设置管理员权限

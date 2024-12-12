@@ -35,7 +35,7 @@
             <ul class="nav navbar-nav navbar-right">
     {% if request.user.is_authenticated %}
         <li class="dropdown">
-            <img src="">
+            <img src={{ request.user.image }}>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                aria-expanded="false">{{ request.user.username }}<span class="caret"></span></a>
             <ul class="dropdown-menu">
