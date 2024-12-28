@@ -18,6 +18,8 @@
 {% block content %}
     <div class="container">
         <p>登陆成功</p>
+    <li><img src="{{ MEDIA_URL }}image/default.jpg" alt="User Avatar" width="30" height="30"></li>
+                    <li><img src="{{ request.user.image }}" alt="User Avatar" width="30" height="30"></li>
     </div>
 {% endblock %}
 

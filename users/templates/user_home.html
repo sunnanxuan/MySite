@@ -1,0 +1,49 @@
+<div class="container">
+    <!-- 个人信息头部 -->
+    <div class="profile-header">
+        <img src="{{ request.user.userprofile.image.url }}" alt="Avatar" class="avatar">
+        <div>
+            <div class="nickname">
+                {% if request.user.userprofile.nickname %}
+                    <span>{{ request.user.userprofile.nickname }}</span>
+                {% else %}
+                    <span>{{ request.user.username }}</span>
+                {% endif %}
+            </div>
+            <div class="description">
+                {% if  request.user.userprofile.desc %}
+                    <span>{{ request.user.userprofile.desc }}</span>
+                {% else %}
+                    <span>这个人很神秘</span>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- 内容部分 -->
+
+    </div>
+
+<div class="content-section">
+            <!-- 左侧导航栏 -->
+            <div class="left-sidebar">
+                <div class="list-group">
+                    <a href="#" class="list-group-item active">文章</a>
+                    <a href="#" class="list-group-item">收藏</a>
+                    <a href="#" class="list-group-item">赞过</a>
+                </div>
+            </div>
+
+            <!-- 右侧内容 -->
+            <div class="right-content">
+                <h3>我的文章</h3>
+                <p>这里是用户的文章内容部分。</p>
+                <hr>
+                <h3>我的收藏</h3>
+                <p>这里是用户的收藏内容部分。</p>
+                <hr>
+                <h3>我赞过的内容</h3>
+                <p>这里是用户赞过的内容部分。</p>
+            </div>
+</div>
+</div>

@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="{% static 'plugin/font-awesome/css/font-awesome.min.css' %}">
 
     {% block css %}{% endblock %}
+    <style>
+        .user-avatar {
+    display: inline-block; /* 使头像与用户名水平对齐 */
+    vertical-align: middle; /* 垂直居中 */
+    margin-right: 10px; /* 头像与用户名之间的间距 */
+}
+
+.avatar-img {
+    width: 30px; /* 设置头像宽度 */
+    height: 30px; /* 设置头像高度 */
+    border-radius: 50%; /* 使头像为圆形 */
+    object-fit: cover; /* 保证头像不会变形，保持比例 */
+}
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -21,7 +35,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Tracer平台</a>
+            <a class="navbar-brand" href="#">MyBlog</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -29,17 +43,22 @@
             <ul class="nav navbar-nav">
                 <li><a href="#">产品功能<span class="sr-only">(current)</span></a></li>
                 <li><a href="#">企业方案</a></li>
-                <li><a href="#">帮助文档</a></li>
-                <li><a href="#">价格</a></li>
+
             </ul>
             <ul class="nav navbar-nav navbar-right">
     {% if request.user.is_authenticated %}
+        <li class="user-avatar">
+            <img src="{{ request.user.userprofile.image.url }}" alt="User Avatar" class="avatar-img">
+        </li>
         <li class="dropdown">
-            <img src={{ request.user.image }}>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-               aria-expanded="false">{{ request.user.username }}<span class="caret"></span></a>
+               aria-expanded="false">
+               {{ request.user.username }}<span class="caret"></span>
+            </a>
             <ul class="dropdown-menu">
-                <li><a href="#">个人中心</a></li>
+                <li><a href="{% url 'user_home' %}">个人中心</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">设置</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url 'logout' %}">退 出</a></li>
             </ul>
@@ -49,6 +68,7 @@
         <li><a href="{% url 'register' %}">注册</a></li>
     {% endif %}
 </ul>
+
 
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

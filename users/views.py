@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.auth import logout
 from django.db import transaction
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -83,6 +84,7 @@ def register(request):
             user.save()
             UserProfile.objects.create(owner=user, **profile_data)
 
+
         # 这里可以替换为实际发送邮件的逻辑
         # send_register_email(user.email, 'register')
         return JsonResponse({'status': True, 'data': '/login/'})
@@ -107,6 +109,21 @@ def active_user(request,active_code):
 
 
 
+
+@login_required(login_url='login')
+def user_home(request):
+    return render(request, 'user.html', {'page_template': 'user_home.html'})
+
+
+
+
+@login_required(login_url='login')
+def user_profile(request):
+    return render(request, 'user.html', {'page_template': 'user_profile.html'})
+
+
+
+
 def logout_view(request):
     logout(request)
     return redirect('home')
@@ -115,4 +132,5 @@ def logout_view(request):
 
 
 def home(request):
+    print(request.user.userprofile.image)
     return render(request, 'home.html')

@@ -133,10 +133,7 @@ STATICFILES_DIRS = [
 
 import os
 
-# 用于访问媒体文件的 URL 前缀
 MEDIA_URL = '/media/'
-
-# 用于存储上传文件的目录，通常在项目根目录下
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 

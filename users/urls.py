@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from users import views
 
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -12,4 +14,8 @@ urlpatterns = [
 
     path("home/", views.home, name='home'),
 
-]
+    path("user/home/", views.user_home, name='user_home'),
+    path("user/profile/", views.user_profile, name='user_profile'),
+
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

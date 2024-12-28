@@ -1,0 +1,22 @@
+ /* 设置背景色为淡蓝色 */
+        body {
+            background-color: #F0F8FF; /* 淡蓝色 */
+        }
+
+        /* 左侧列表组宽度占容器的五分之一 */
+        .left-sidebar {
+            width: 20%; /* 宽度占容器的五分之一 */
+            background-color: #f8f9fa; /* 设置左侧栏背景色 */
+            padding: 20px;
+        }
+
+        /* 主体内容部分 */
+        .main-content {
+            width: 80%; /* 剩下的80%宽度 */
+            padding: 20px;
+        }
+
+        /* 列表项之间的间距 */
+        .list-group-item {
+            margin-bottom: 10px;
+        }
