@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
 from users.forms.account import LoginForm, RegisterModelForm
-#from utils.send_emali import send_register_email
+from utils.send_emali import send_register_email
 from .models import UserProfile, EmailVerification
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
@@ -80,16 +80,22 @@ def register(request):
         with transaction.atomic():
             user = User.objects.create_user(**user_data)
             # 邮件暂时无法发送，设置管理员权限
-            user.is_staff = True
+            user.is_staff = False
             user.save()
             UserProfile.objects.create(owner=user, **profile_data)
 
 
-        # 这里可以替换为实际发送邮件的逻辑
-        # send_register_email(user.email, 'register')
-        return JsonResponse({'status': True, 'data': '/login/'})
+        send_register_email(user.email, 'register')
+        return JsonResponse({'status': True, 'data': '/active/'})
     else:
         return JsonResponse({'status': False, 'error': form.errors})
+
+
+
+
+
+def active(request):
+    return render(request, 'active.html')
 
 
 
