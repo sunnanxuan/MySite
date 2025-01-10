@@ -17,6 +17,7 @@ urlpatterns = [
 
     path("user/home/", views.user_home, name='user_home'),
     path("user/profile/", views.user_profile, name='user_profile'),
+    path("user/editor", views.editor_users, name='editor_users'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

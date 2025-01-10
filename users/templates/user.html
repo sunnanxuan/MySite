@@ -5,177 +5,199 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/user.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .list-group-item {
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* 布局 */
+        .container {
+            display: flex;
+        }
+
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 200px; /* 固定宽度 */
+            flex-shrink: 0; /* 防止 flex 布局压缩 */
+            background-color: #ffffff; /* 确保背景颜色一致 */
+            padding: 15px 10px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #34495e;
             cursor: pointer;
         }
 
-        /* 主列表项和子列表项区分颜色 */
-        .list-group-item.main-item {
-            background-color: #f8f9fa; /* 主列表项背景颜色 */
-            font-weight: bold;
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
-        .list-group-item.sub-item {
-            background-color: #e9ecef; /* 子列表项背景颜色 */
+        .sidebar ul li {
+            margin-bottom: 10px;
         }
 
-        /* 箭头 */
-        .caret {
-            margin-left: 10px; /* 添加一些空间，使箭头与文本分开 */
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #34495e;
+            font-size: 14px;
+            padding: 10px;
+            display: block;
+            border-radius: 4px;
         }
 
-        .caret-up {
-            transform: rotate(180deg); /* 旋转箭头，显示向上箭头 */
+        .sidebar ul li a:hover {
+            background-color: #007bff;
+            color: #fff;
         }
 
-         .profile-header {
+        .submenu {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .submenu.active {
+            display: block;
+        }
+
+        /* 右侧内容区 */
+
+        .content-wrapper {
+            flex-grow: 1; /* 自动扩展，占据剩余空间 */
+            padding: 20px; /* 增加内边距 */
+            box-sizing: border-box; /* 包括内边距在宽度内 */
+            min-width: 0; /* 防止内容溢出导致不换行问题 */
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .content .header {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
         }
 
-        .profile-header .avatar {
-            width: 100px;
-            height: 100px;
+        .content .header img {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             margin-right: 20px;
         }
 
-        .profile-header .nickname {
-            font-size: 24px;
-            font-weight: bold;
+        .content .header h2 {
+            margin: 0;
+            font-size: 22px;
         }
 
-        .profile-header .description {
-            font-size: 16px;
+        .content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .content table th,
+        .content table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .content table th {
+            background-color: #f4f4f4;
             color: #555;
         }
 
-        .list-group-item {
+        .content table td {
+            color: #333;
+        }
+
+        .edit-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
         }
 
-        .list-group-item.active {
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .edit-link {
+            display: inline-block;
             background-color: #007bff;
-            color: white;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            float: right;
         }
 
-        .content-section {
-            display: flex;
-            margin-top: 20px;
+        .edit-link:hover {
+            background-color: #0056b3;
         }
 
-        .content-section .left-sidebar {
-            width: 25%;
-            padding-right: 20px;
-        }
-
-        .content-section .right-content {
-            width: 75%;
-        }
     </style>
+
 {% endblock %}
 
 {% block content %}
+
     <div class="container">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- 左侧栏 -->
-                <div class="col-md-2 left-sidebar">
-                    <div class="list-group">
-                        <!-- 主列表项 1 -->
-                        <div class="list-group-item main-item" id="toggle-collapse1">
-                            个人中心
-                            <span class="glyphicon glyphicon-chevron-down caret" id="arrow1" aria-hidden="true"></span> <!-- 向下箭头 -->
-                        </div>
-                        <div id="collapse1" class="collapse">
-                            <div class="card card-body">
-                                <div class="list-group">
-                                    <!-- 子列表项 1 -->
-                                    <div class="list-group-item sub-item">
-                                        <li><a href="{% url 'user_home' %}">个人主页</a></li>
-                                    </div>
-                                    <div class="list-group-item sub-item">
-                                        <li><a href="{% url 'user_profile' %}">个人信息</a></li>
-                                    </div>
-                                    <!-- 子列表项 2 -->
-                                    <div class="list-group-item sub-item">
-                                        <li><a href="#">账号安全</a></li>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 主列表项 2 -->
-                        <div class="list-group-item main-item" id="toggle-collapse2">
-                            内容管理
-                            <span class="glyphicon glyphicon-chevron-down caret" id="arrow2" aria-hidden="true"></span> <!-- 向下箭头 -->
-                        </div>
-                        <div id="collapse2" class="collapse">
-                            <div class="card card-body">
-                                <div class="list-group">
-                                    <!-- 子列表项 1 -->
-                                    <div class="list-group-item sub-item">
-                                        <a href="#">添加文章</a>
-                                    </div>
-                                    <!-- 子列表项 2 -->
-                                    <div class="list-group-item sub-item">
-                                        <a href="#">草稿箱</a>
-                                    </div>
-                                    <div class="list-group-item sub-item">
-                                        <a href="#">评论</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-10 main-content">
-                    {% include page_template %}
-                </div>
-
-            </div>
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <h3 onclick="toggleSubmenu('user-info')">个人中心</h3>
+            <ul id="user-info" class="submenu">
+                <li><a href="{% url 'user_home' %}">个人主页</a></li>
+                <li><a href="{% url 'user_profile' %}">个人信息</a></li>
+                <li><a href="#">账号安全</a></li>
+            </ul>
+            <h3 onclick="toggleSubmenu('content-manage')">内容管理</h3>
+            <ul id="content-manage" class="submenu">
+                <li><a href="#">添加文章</a></li>
+                <li><a href="#">已发布</a></li>
+                <li><a href="#">草稿箱</a></li>
+                <li><a href="#">评论管理</a></li>
+                <li><a href="#">数据分析</a></li>
+            </ul>
         </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content-wrapper">
+            {% include page_template %}
+        </div>
+
     </div>
 {% endblock %}
 
 {% block js %}
     <script>
-        // 控制展开和折叠
-        document.getElementById('toggle-collapse1').addEventListener('click', function() {
-            var collapse1 = document.getElementById('collapse1');
-            var arrow1 = document.getElementById('arrow1');
-            // 切换 collapse 状态
-            if (collapse1.classList.contains('collapse')) {
-                collapse1.classList.remove('collapse');
-                arrow1.classList.add('caret-up');  // 向上箭头
-                arrow1.classList.remove('glyphicon-chevron-down');
-                arrow1.classList.add('glyphicon-chevron-up');
-            } else {
-                collapse1.classList.add('collapse');
-                arrow1.classList.remove('caret-up');  // 向下箭头
-                arrow1.classList.remove('glyphicon-chevron-up');
-                arrow1.classList.add('glyphicon-chevron-down');
-            }
-        });
-
-        document.getElementById('toggle-collapse2').addEventListener('click', function() {
-            var collapse2 = document.getElementById('collapse2');
-            var arrow2 = document.getElementById('arrow2');
-            // 切换 collapse 状态
-            if (collapse2.classList.contains('collapse')) {
-                collapse2.classList.remove('collapse');
-                arrow2.classList.add('caret-up');  // 向上箭头
-                arrow2.classList.remove('glyphicon-chevron-down');
-                arrow2.classList.add('glyphicon-chevron-up');
-            } else {
-                collapse2.classList.add('collapse');
-                arrow2.classList.remove('caret-up');  // 向下箭头
-                arrow2.classList.remove('glyphicon-chevron-up');
-                arrow2.classList.add('glyphicon-chevron-down');
-            }
-        });
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('active');
+        }
     </script>
 {% endblock %}

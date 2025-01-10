@@ -2,7 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from utils.user_avatar_upload_to import user_avatar_upload_to
 
+
 # Create your models here.
+
+
+
+"""
+
+python manage.py makemigrations
+python manage.py migrate
+
+"""
+
+
+
+
 
 class UserProfile(models.Model):
     USER_GENDER_TYPE = (
@@ -15,9 +29,12 @@ class UserProfile(models.Model):
     gender=models.CharField(verbose_name='性别', choices=USER_GENDER_TYPE,max_length=6,default='male')
     image=models.ImageField(verbose_name='用户头像',upload_to=user_avatar_upload_to,default='image/default.jpg',max_length=255)
     desc=models.TextField(verbose_name='个人简介',max_length=200,blank=True,default='')
+    signature=models.CharField(verbose_name='个性签名',max_length=50,blank=True,default='')
 
     def __str__(self):
         return f"{self.owner.username}'s Profile"
+
+
 
 
 

@@ -107,3 +107,15 @@ class LoginForm(BootStrapForm, forms.Form):
 
 
 
+
+
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['nickname', 'signature', 'gender', 'birthday', 'desc', 'image']
+
+
+
+

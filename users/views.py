@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
-from users.forms.account import LoginForm, RegisterModelForm
+from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm
 from utils.send_emali import send_register_email
 from .models import UserProfile, EmailVerification
 from django.contrib.auth import authenticate, login as auth_login
@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.contrib.auth import logout
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 
@@ -130,9 +131,35 @@ def user_profile(request):
 
 
 
+
+
+
+@login_required(login_url='login')
+def editor_users(request):
+    user_profile = request.user.userprofile  # 获取当前用户的用户信息
+
+    if request.method == 'POST':
+        # 创建一个表单实例并绑定数据
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+
+        if form.is_valid():
+            # 如果表单有效，保存更新的用户资料
+            form.save()
+            messages.success(request, "信息修改成功！")
+            return render(request, 'user.html', {'page_template': 'user_profile.html'})
+    else:
+        # 如果是 GET 请求，渲染空表单
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'user.html', {'page_template': 'editor_users.html', 'form': form})
+
+
+
+
+
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('login')
 
 
 

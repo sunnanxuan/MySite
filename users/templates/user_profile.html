@@ -1,44 +1,27 @@
-<div class="user-profile">
-    <div class="profile-header">
-        <!-- 用户头像 -->
-        <div class="profile-avatar">
-            <img src="{{ MEDIA_URL }}{{ request.user.image.url }}" alt="User Avatar" width="150"
-                 height="150">
-        </div>
-    </div>
 
-    <!-- 用户个人信息表 -->
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th colspan="2" class="text-center">用户个人信息</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <th>用户名</th>
-            <td>{{ request.user.username }}</td>
-        </tr>
+<div class="content">
+    <div class="header">
+        <img src="{{ request.user.userprofile.image.url }}" alt="Avatar" class="avatar">
+        <div>
+            <h2>{{ request.user.userprofile.nickname }}</h2>
+            <p>{{ request.user.userprofile.signature }}</p>
+        </div>
+        <a href="{% url 'editor_users' %}" class="edit-link">修改信息</a>
+    </div>
+    <table>
         <tr>
             <th>昵称</th>
             <td>{{ request.user.userprofile.nickname }}</td>
-        </tr>
-        <tr>
-            <th>生日</th>
-            <td>{{ request.user.userprofile.birthday }}</td>
         </tr>
         <tr>
             <th>性别</th>
             <td>{{ request.user.userprofile.get_gender_display }}</td>
         </tr>
         <tr>
-            <th>邮箱</th>
-            <td>{{ request.user.email }}</td>
+            <th>生日</th>
+            <td>{{ request.user.userprofile.birthday }}</td>
         </tr>
-        <tr>
-            <th>个人简介</th>
-            <td>{{ request.user.userprofile.desc }}</td>
-        </tr>
-        </tbody>
     </table>
+    <h3>个人简介</h3>
+    <p>{{ request.user.userprofile.desc }}</p>
 </div>
