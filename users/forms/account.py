@@ -161,3 +161,41 @@ class ChangePasswordForm(forms.Form):
         if new_password != confirm_password:
             raise ValidationError("新密码和确认密码不匹配。")
         return confirm_password
+
+
+
+
+
+
+
+class ChangeEmailForm(forms.Form):
+    new_email = forms.EmailField(
+        label="新邮箱",
+        required=True,
+        error_messages={
+            'required': '新邮箱地址不能为空。',
+            'invalid': '请输入有效的邮箱地址。',
+        }
+    )
+    password = forms.CharField(
+        label="当前密码",
+        widget=forms.PasswordInput,
+        required=True,
+        error_messages={'required': '密码不能为空。'}
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if not self.user.check_password(password):
+            raise ValidationError("当前密码不正确。")
+        return password
+
+    def clean_new_email(self):
+        new_email = self.cleaned_data.get('new_email')
+        if User.objects.filter(email=new_email).exists():
+            raise ValidationError("该邮箱已被使用。")
+        return new_email

@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
-from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm,ChangePasswordForm
+from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm,ChangePasswordForm,ChangeEmailForm
 from utils.send_emali import send_register_email
 from .models import UserProfile, EmailVerification
 from django.contrib.auth import authenticate, login as auth_login
@@ -169,25 +169,23 @@ def account_safety(request):
 @login_required
 def change_email(request):
     if request.method == 'POST':
-        new_email = request.POST.get('new_email')
-        password = request.POST.get('password')
-
-        # 校验邮箱是否已存在
-        if User.objects.filter(email=new_email).exists():
-            messages.error(request, '该邮箱已被使用，请使用其他邮箱。')
-            return render(request, 'user.html', {'page_template': 'change_email.html'})
-
-        # 验证密码是否正确
-        if request.user.check_password(password):
+        form = ChangeEmailForm(request.POST, user=request.user)
+        if form.is_valid():
+            # 更新邮箱
+            new_email = form.cleaned_data['new_email']
             request.user.email = new_email
             request.user.save()
+
             messages.success(request, '邮箱地址已成功更换！')
             return render(request, 'user.html', {'page_template': 'account_safety.html'})
         else:
-            messages.error(request, '密码不正确，请重新输入。')
+            # 表单无效，返回带错误信息的页面
+            return render(request, 'user.html', {'page_template': 'change_email.html', 'form': form})
 
-    return render(request, 'user.html', {'page_template': 'change_email.html'})
+    else:
+        form = ChangeEmailForm(user=request.user)  # 初始化表单
 
+    return render(request, 'user.html', {'page_template': 'change_email.html', 'form': form})
 
 
 

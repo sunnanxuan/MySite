@@ -1,19 +1,50 @@
 <div class="content">
     <div class="header">
-        <h2>更换绑定邮箱</h2>
+        <h2>修改邮箱</h2>
     </div>
 
     <form method="post" action="{% url 'change_email' %}">
         {% csrf_token %}
+
+        <!-- 显示表单错误 -->
+        {% if form.non_field_errors %}
+            <div class="error-messages">
+                {% for error in form.non_field_errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- 新邮箱 -->
         <div class="form-group">
-            <label for="new_email">新邮箱地址</label>
-            <input type="email" id="new_email" name="new_email" required placeholder="请输入新的邮箱地址">
+            <label for="id_new_email">新邮箱</label>
+            <input type="email" id="id_new_email" name="new_email" required>
+            {% if form.new_email.errors %}
+                <div class="error-message">
+                    {% for error in form.new_email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
+
+        <!-- 当前密码 -->
         <div class="form-group">
-            <label for="password">当前密码</label>
-            <input type="password" id="password" name="password" required placeholder="请输入当前密码">
+            <label for="id_password">当前密码</label>
+            <input type="password" id="id_password" name="password" required>
+            {% if form.password.errors %}
+                <div class="error-message">
+                    {% for error in form.password.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-        <button type="submit" class="btn">更换邮箱</button>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">确认修改</button>
+            <a href="{% url 'account_safety' %}" class="btn cancel-btn">取消修改</a>
+        </div>
     </form>
 </div>
 
@@ -27,9 +58,6 @@
     .header h2 {
         font-size: 24px;
         margin-bottom: 10px;
-    }
-    .header p {
-        color: #666;
     }
     .form-group {
         margin-bottom: 15px;
@@ -45,6 +73,11 @@
         border: 1px solid #ddd;
         border-radius: 4px;
     }
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
     .btn {
         padding: 10px 20px;
         background-color: #007BFF;
@@ -52,8 +85,28 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        text-decoration: none;
+        text-align: center;
     }
     .btn:hover {
         background-color: #0056b3;
+    }
+    .cancel-btn {
+        background-color: #6c757d;
+    }
+    .cancel-btn:hover {
+        background-color: #5a6268;
+    }
+
+    .error-messages {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+    }
+    .error-message {
+        color: red;
     }
 </style>
