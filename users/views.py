@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
-from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm
+from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm,ChangePasswordForm
 from utils.send_emali import send_register_email
 from .models import UserProfile, EmailVerification
 from django.contrib.auth import authenticate, login as auth_login
@@ -11,6 +11,7 @@ from django.contrib.auth import logout
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 
 
 
@@ -152,6 +153,84 @@ def editor_users(request):
         form = UserProfileForm(instance=user_profile)
 
     return render(request, 'user.html', {'page_template': 'editor_users.html', 'form': form})
+
+
+
+
+
+
+@login_required(login_url='login')
+def account_safety(request):
+    return render(request, 'user.html', {'page_template': 'account_safety.html'})
+
+
+
+
+@login_required
+def change_email(request):
+    if request.method == 'POST':
+        new_email = request.POST.get('new_email')
+        password = request.POST.get('password')
+
+        # 校验邮箱是否已存在
+        if User.objects.filter(email=new_email).exists():
+            messages.error(request, '该邮箱已被使用，请使用其他邮箱。')
+            return render(request, 'user.html', {'page_template': 'change_email.html'})
+
+        # 验证密码是否正确
+        if request.user.check_password(password):
+            request.user.email = new_email
+            request.user.save()
+            messages.success(request, '邮箱地址已成功更换！')
+            return render(request, 'user.html', {'page_template': 'account_safety.html'})
+        else:
+            messages.error(request, '密码不正确，请重新输入。')
+
+    return render(request, 'user.html', {'page_template': 'change_email.html'})
+
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST, user=request.user)  # 传递当前用户
+
+        if form.is_valid():
+            # 获取新密码并更新
+            new_password = form.cleaned_data['new_password']
+            request.user.set_password(new_password)
+            request.user.save()
+
+            # 重新登录以更新会话
+            update_session_auth_hash(request, request.user)
+
+            messages.success(request, '密码修改成功！')
+            return render(request, 'user.html', {'page_template': 'account_safety.html'})
+        else:
+            # 如果表单无效，将错误信息显示到页面
+            return render(request, 'user.html', {'page_template': 'change_password.html', 'form': form})
+
+    else:
+        form = ChangePasswordForm(user=request.user)  # 初始化时传递当前用户
+
+    return render(request, 'user.html', {'page_template': 'change_password.html', 'form': form})
+
+
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        # 这里处理发送重置密码邮件的逻辑
+        # 例如，通过 email 查找用户并发送重置密码邮件
+        # (具体的密码重置流程可参考 Django 默认的密码重置视图)
+
+        messages.success(request, '如果邮箱存在，我们已发送重置密码的邮件。')
+        return redirect('login')  # 重定向到登录页
+
+    return render(request, 'forgot_password.html')
 
 
 

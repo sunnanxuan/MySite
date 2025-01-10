@@ -1,0 +1,59 @@
+<div class="content">
+    <div class="header">
+        <h2>更换绑定邮箱</h2>
+    </div>
+
+    <form method="post" action="{% url 'change_email' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="new_email">新邮箱地址</label>
+            <input type="email" id="new_email" name="new_email" required placeholder="请输入新的邮箱地址">
+        </div>
+        <div class="form-group">
+            <label for="password">当前密码</label>
+            <input type="password" id="password" name="password" required placeholder="请输入当前密码">
+        </div>
+        <button type="submit" class="btn">更换邮箱</button>
+    </form>
+</div>
+
+<!-- 样式部分 -->
+<style>
+    .content {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .header h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    .header p {
+        color: #666;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .btn {
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+</style>

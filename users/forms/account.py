@@ -2,13 +2,9 @@ from cProfile import label
 from os.path import exists
 from tempfile import template
 
-from django.conf import settings
-from django.core.validators import RegexValidator
 from django import forms
 from django.core.exceptions import ValidationError
-from users import models
 from users.forms.bootstrap import BootStrapForm
-from utils import encrypt
 from django.contrib.auth.models import User
 from users.models import UserProfile
 
@@ -59,11 +55,11 @@ class RegisterModelForm(BootStrapForm, forms.ModelForm):
 
     def clean_password(self):
         pwd = self.cleaned_data['password']
-        return encrypt.md5(pwd)
+        return pwd
 
     def clean_confirm_password(self):
         pwd = self.cleaned_data['password']
-        confirm_pwd = encrypt.md5(self.cleaned_data['confirm_password'])
+        confirm_pwd = self.cleaned_data['confirm_password']
         if pwd != confirm_pwd:
             raise ValidationError('密码不一致')
         return confirm_pwd
@@ -102,7 +98,7 @@ class LoginForm(BootStrapForm, forms.Form):
 
     def clean_password(self):
         pwd = self.cleaned_data['password']
-        return encrypt.md5(pwd)
+        return pwd
 
 
 
@@ -119,3 +115,49 @@ class UserProfileForm(forms.ModelForm):
 
 
 
+
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput, label="当前密码", required=True)
+    new_password = forms.CharField(
+        label='新密码',
+        max_length=64,
+        min_length=8,
+        error_messages={
+            'min_length': '密码长度不能小于8个字符',
+            'max_length': '密码长度不能大于64个字符'
+        },
+        widget=forms.PasswordInput()
+    )
+
+    confirm_password = forms.CharField(
+        label='确认新密码',
+        max_length=64,
+        min_length=8,
+        error_messages={
+            'min_length': '密码长度不能小于8个字符',
+            'max_length': '密码长度不能大于64个字符'
+        },
+        widget=forms.PasswordInput()
+    )
+
+    def __init__(self, *args, **kwargs):
+        # 在初始化时传入 user 对象
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        if not self.user.check_password(old_password):
+            raise ValidationError("当前密码不正确。")
+        return old_password
+
+    def clean_confirm_password(self):
+        new_password = self.cleaned_data.get('new_password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+
+        # 比较新密码和确认密码是否一致
+        if new_password != confirm_password:
+            raise ValidationError("新密码和确认密码不匹配。")
+        return confirm_password

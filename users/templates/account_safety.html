@@ -1,10 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>账号安全</h1>
-</body>
-</html>
+<div class="content">
+    <div class="header">
+        <h2>账户安全设置</h2>
+    </div>
+
+    <!-- 用户信息部分 -->
+    <div class="section">
+        <h3>账户信息</h3>
+        <table>
+            <tr>
+                <th>用户名</th>
+                <td>{{ request.user.username }}</td>
+            </tr>
+            <tr>
+                <th>密码</th>
+                <td>******</td> <!-- 密码显示为星号 -->
+                <td><a href="{% url 'change_password' %}" class="btn">更改密码</a></td>
+            </tr>
+            <tr>
+                <th>绑定邮箱</th>
+                <td>{{ request.user.email }}</td>
+                <td><a href="{% url 'change_email' %}" class="btn">更改邮箱</a></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<!-- 样式部分 -->
+<style>
+    .content {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .header h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    .section h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    .section table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .section table th, .section table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    .section table th {
+        width: 20%;
+        font-weight: bold;
+    }
+    .btn {
+        padding: 6px 12px;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    .navigation {
+        margin-top: 20px;
+        margin-bottom: 30px;
+    }
+    .navigation ul {
+        list-style: none;
+        padding: 0;
+    }
+    .navigation ul li {
+        display: inline;
+        margin-right: 15px;
+    }
+    .navigation ul li a {
+        text-decoration: none;
+        color: #007BFF;
+        font-weight: bold;
+    }
+    .navigation ul li a:hover {
+        color: #0056b3;
+    }
+</style>
