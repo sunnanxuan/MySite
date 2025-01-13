@@ -12,6 +12,7 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.urls import reverse
 
 
 
@@ -41,7 +42,7 @@ def login(request):
 
             if user is not None:
                 auth_login(request, user)
-                return JsonResponse({'status': True, 'data':'/home/'})
+                return JsonResponse({'status': True, 'data':reverse('blog:index')})
             else:
                 form.add_error('username', '用户名或密码错误')
         else:
@@ -87,7 +88,7 @@ def register(request):
 
 
         send_register_email(user.email, 'register')
-        return JsonResponse({'status': True, 'data': '/active/'})
+        return JsonResponse({'status': True, 'data': reverse('users:active')})
     else:
         return JsonResponse({'status': False, 'error': form.errors})
 
@@ -111,7 +112,7 @@ def active_user(request,active_code):
             user.save()
     else:
         return HttpResponse('链接有误')
-    return redirect('login')
+    return redirect('users:login')
 
 
 
@@ -235,7 +236,7 @@ def forgot_password(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('users:login')
 
 
 

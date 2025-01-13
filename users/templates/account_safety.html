@@ -14,12 +14,12 @@
             <tr>
                 <th>密码</th>
                 <td>******</td> <!-- 密码显示为星号 -->
-                <td><a href="{% url 'change_password' %}" class="btn">更改密码</a></td>
+                <td><a href="{% url 'users:change_password' %}" class="btn">更改密码</a></td>
             </tr>
             <tr>
                 <th>绑定邮箱</th>
                 <td>{{ request.user.email }}</td>
-                <td><a href="{% url 'change_email' %}" class="btn">更改邮箱</a></td>
+                <td><a href="{% url 'users:change_email' %}" class="btn">更改邮箱</a></td>
             </tr>
         </table>
     </div>

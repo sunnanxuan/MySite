@@ -6,7 +6,7 @@
             <h2>{{ request.user.userprofile.nickname }}</h2>
             <p>{{ request.user.userprofile.signature }}</p>
         </div>
-        <a href="{% url 'editor_users' %}" class="edit-link">修改信息</a>
+        <a href="{% url 'users:editor_users' %}" class="edit-link">修改信息</a>
     </div>
     <table>
         <tr>

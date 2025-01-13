@@ -37,7 +37,7 @@ def send_register_email(email,send_type='register'):
 
     if send_type == 'register':
         email_title='博客的注册激活链接'
-        email_body=Content("text/plain", '请点击一下链接激活账号：http://127.0.0.1:8000/active/{0}'.format(code))
+        email_body=Content("text/plain", '请点击一下链接激活账号：http://127.0.0.1:8000/users/active/{0}'.format(code))
 
 
     # 3. 创建邮件对象

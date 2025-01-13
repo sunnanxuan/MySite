@@ -6,14 +6,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
+app_name = 'users'
+
 urlpatterns = [
     path("register/", account.register, name='register'),
     path("login/", account.login, name='login'),
     path("logout/", account.logout_view, name='logout'),
     path("active/<active_code>", account.active_user, name='active_user'),
     path("active/", account.active, name='active'),
-
-    path("", account.home, name='home'),
 
     path("home/", account.user_home, name='user_home'),
     path("profile/", account.user_profile, name='user_profile'),
