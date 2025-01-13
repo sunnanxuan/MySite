@@ -54,7 +54,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "/login/",
+                    url: "{% url 'login' %}",
                     data: $('#loginForm').serialize(),
                     dataType: "JSON",
                     success: function (res) {

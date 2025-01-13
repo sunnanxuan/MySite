@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        /* 美化博客部分 */
+        .blog-container {
+            max-width: 800px;
+            margin: 0 auto; /* 水平居中 */
+        }
+        .blog-box {
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        .blog-box:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        /* 美化页脚 */
+        .footer {
+            background-color: #f5f5f5; /* 灰色背景 */
+            padding: 20px 0;
+            text-align: center;
+        }
+        .footer p {
+            color: #777; /* 字体颜色灰色 */
+            margin: 0;
+
+        }
+    </style>
+{% endblock %}
+
+{% block content_left %}
+    <section class="section">
+        <div class="container blog-container">
+            {% for post in post_list %}
+                <div class="box blog-box">
+                    <h1 class="title">{{ post.title }}</h1>
+                    <p class="subtitle">
+                        作者：{{ post.owner.username }} 发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}
+                    </p>
+                    <p>{{ post.content|truncatechars:50 }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block content_right %}
+
+
+{% endblock %}
+
+
+{% block footer %}
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>这是博客的底部</p>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

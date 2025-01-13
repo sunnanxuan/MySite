@@ -1,7 +1,3 @@
-from cProfile import label
-from os.path import exists
-from tempfile import template
-
 from django import forms
 from django.core.exceptions import ValidationError
 from users.forms.bootstrap import BootStrapForm

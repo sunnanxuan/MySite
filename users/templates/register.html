@@ -66,7 +66,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "/register/",
+                    url: "{% url 'register' %}",
                     data: formData,
                     dataType: "JSON",
                     processData: false,  // 禁止 jQuery 自动处理数据

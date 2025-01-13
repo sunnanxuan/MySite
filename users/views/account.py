@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
 from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm,ChangePasswordForm,ChangeEmailForm
 from utils.send_emali import send_register_email
-from .models import UserProfile, EmailVerification
+from users.models import UserProfile, EmailVerification
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -28,7 +28,6 @@ def login(request):
         return render(request, 'login.html', {'form': form})
 
     form = LoginForm(request, data=request.POST)
-    print(form.errors)
     if form.is_valid():
         username = form.cleaned_data['username']
         password = form.cleaned_data['password']

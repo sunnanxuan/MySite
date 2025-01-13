@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from .models import UserProfile,EmailVerification
+from users.models import UserProfile,EmailVerification
 from django.contrib.auth.admin import UserAdmin
 
 
@@ -24,3 +24,6 @@ admin.site.register(User, UserProfileAdmin)
 class Admin(admin.ModelAdmin):
 
     list_display = ('code',)
+
+
+
