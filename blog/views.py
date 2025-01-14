@@ -4,6 +4,8 @@ from .models import Category, Post
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import HttpResponseForbidden
+from django.contrib import messages
 
 
 
@@ -101,3 +103,15 @@ def edit_draft(request, post_id):
     else:
         form = PostForm(instance=draft)
     return render(request, 'edit_draft.html', {'form': form, 'draft': draft})
+
+
+
+
+@login_required
+def delete_draft(request, post_id):
+    draft = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.DRAFT)
+    if request.method == 'POST':
+        draft.delete()
+        messages.success(request, "草稿已成功删除。")
+        return redirect('blog:draft_list')
+    return HttpResponseForbidden("不允许的操作")

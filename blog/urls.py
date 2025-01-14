@@ -16,4 +16,5 @@ urlpatterns = [
     path('my-posts/', views.my_posts, name='my_posts'),
     path('drafts/', views.draft_list, name='draft_list'),  # 草稿箱
     path('drafts/edit/<int:post_id>/', views.edit_draft, name='edit_draft'),
+    path('drafts/delete/<int:post_id>/', views.delete_draft, name='delete_draft'),
 ]
