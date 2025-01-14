@@ -3,15 +3,44 @@
 
 {% block title %}{{ post.title }}{% endblock %}
 
-
 {% block css %}{% endblock %}
 
-
 {% block content %}
-    <h1>{{ post.title }}</h1>
-    <p>{{ post.content }}</p>
-    <p>分类：{{ post.category.name }}</p>
-    <p>标签：{{ post.tags.name }}</p>
-    <p>作者：{{ post.owner.username }}</p>
-    <a href="{% url 'blog:category_detail' post.category.id %}">返回到该分类</a>
+    <article>
+        <header>
+            <h1>{{ post.title }}</h1>
+            <p>作者：<strong>{{ post.owner.username }}</strong></p>
+            <p>分类：<a href="{% url 'blog:category_detail' post.category.id %}">{{ post.category.name }}</a></p>
+            <p>标签：<span>{{ post.tags.name }}</span></p>
+        </header>
+
+        <section>
+            <p>{{ post.content }}</p>
+        </section>
+
+        <footer>
+            <a href="{{ previous_url|default:'#' }}">返回</a>
+        </footer>
+    </article>
+
+    <hr>
+
+    <nav aria-label="文章导航">
+        <ul class="post-navigation">
+            <li>
+                {% if prev_post %}
+                    <a href="{% url 'blog:post_detail' prev_post.id %}" class="prev-post">上一篇：{{ prev_post.title }}</a>
+                {% else %}
+                    <span class="no-prev-post">已经是第一篇文章了</span>
+                {% endif %}
+            </li>
+            <li>
+                {% if next_post %}
+                    <a href="{% url 'blog:post_detail' next_post.id %}" class="next-post">下一篇：{{ next_post.title }}</a>
+                {% else %}
+                    <span class="no-next-post">已经是最后一篇文章了</span>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
 {% endblock %}

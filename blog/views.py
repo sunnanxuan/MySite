@@ -15,7 +15,16 @@ def index(request):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    return render(request, 'post_detail.html', {'post': post})
+    prev_post = Post.objects.filter(id__lt=post_id).order_by('-id').first()
+    next_post = Post.objects.filter(id__gt=post_id).order_by('id').first()
+    previous_url = request.META.get('HTTP_REFERER', None)
+
+    return render(request, 'post_detail.html', {
+        'post': post,
+        'prev_post': prev_post,
+        'next_post': next_post,
+        'previous_url': previous_url,
+    })
 
 
 
