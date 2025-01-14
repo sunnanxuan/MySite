@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}发布博客{% endblock %}
+
+{% block content %}
+    <h1>发布博客</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">发布</button>
+    </form>
+    <a href="{% url 'blog:index' %}" class="btn btn-secondary mt-3">返回首页</a>
+{% endblock %}

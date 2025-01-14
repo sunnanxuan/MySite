@@ -145,12 +145,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'smtp.163.com'
-#EMAIL_PORT = 587  # 使用 TLS 端口
-#EMAIL_USE_TLS = True  # 启用 TLS
-#EMAIL_HOST_USER = 'yksunnx0828@163.com'
-#EMAIL_HOST_PASSWORD = 'GDpCGq9XGSUmjTGY'
 
-# 默认发件人地址
-#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+LOGIN_URL = '/users/login/'
