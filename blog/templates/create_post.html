@@ -6,7 +6,8 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">发布</button>
+        <button type="submit" name="publish" class="btn btn-primary">发布</button>
+        <button type="submit" name="save_draft" class="btn btn-secondary">保存为草稿</button>
     </form>
-    <a href="{% url 'blog:index' %}" class="btn btn-secondary mt-3">返回首页</a>
+    <a href="{% url 'blog:index' %}" class="btn btn-light mt-3">返回首页</a>
 {% endblock %}

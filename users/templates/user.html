@@ -178,10 +178,10 @@
             <h3 onclick="toggleSubmenu('content-manage')">内容管理</h3>
             <ul id="content-manage" class="submenu">
                 <li><a href="{% url 'blog:create_post' %}">添加文章</a></li>
-                <li><a href="#">已发布</a></li>
-                <li><a href="#">草稿箱</a></li>
+                <li><a href="{% url 'blog:my_posts' %}">已发布</a></li>
+                <li><a href="{% url 'blog:draft_list' %}">草稿箱</a></li>
                 <li><a href="#">评论管理</a></li>
-                <li><a href="#">数据分析</a></li>
+
             </ul>
         </div>
 

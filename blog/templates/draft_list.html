@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}草稿箱{% endblock %}
+
+{% block content %}
+    <h1>草稿箱</h1>
+    <ul>
+        {% for draft in drafts %}
+            <li>
+                <strong>{{ draft.title }}</strong> (创建于：{{ draft.add_date|date:"Y-m-d H:i" }})
+                <a href="{% url 'blog:edit_draft' draft.id %}">继续编辑</a>
+            </li>
+        {% empty %}
+            <p>暂无草稿。</p>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'blog:create_post' %}" class="btn btn-primary">新建博客</a>
+    <a href="{% url 'blog:index' %}" class="btn btn-secondary">返回首页</a>
+{% endblock %}
