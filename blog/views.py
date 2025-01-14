@@ -64,7 +64,8 @@ def create_post(request):
             return redirect('blog:index')
     else:
         form = PostForm()
-    return render(request, 'create_post.html', {'form': form})
+    #return render(request, 'create_post.html', {'form': form})
+    return render(request, 'user.html', {'page_template': 'create_post.html', 'form': form})
 
 
 
@@ -73,7 +74,8 @@ def create_post(request):
 def my_posts(request):
     # 获取当前用户的博客
     posts = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
-    return render(request, 'my_posts.html', {'posts': posts})
+    return render(request, 'user.html', {'page_template': 'my_posts.html', 'posts': posts})
+
 
 
 
@@ -81,7 +83,7 @@ def my_posts(request):
 def draft_list(request):
     # 获取当前用户的草稿列表
     drafts = Post.objects.filter(owner=request.user, status=Post.DRAFT).order_by('-add_date')
-    return render(request, 'draft_list.html', {'drafts': drafts})
+    return render(request, 'user.html', {'page_template': 'draft_list.html', 'drafts': drafts})
 
 
 
@@ -102,7 +104,8 @@ def edit_draft(request, post_id):
             return redirect('blog:draft_list')  # 跳转到草稿箱页面
     else:
         form = PostForm(instance=draft)
-    return render(request, 'edit_draft.html', {'form': form, 'draft': draft})
+    #return render(request, 'edit_draft.html', {'form': form, 'draft': draft})
+    return render(request, 'user.html', {'page_template': 'edit_draft.html', 'form': form, 'draft': draft})
 
 
 
