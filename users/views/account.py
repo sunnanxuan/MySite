@@ -120,14 +120,21 @@ def active_user(request,active_code):
 
 @login_required(login_url='login')
 def user_home(request):
-    return render(request, 'user.html', {'page_template': 'user_home.html'})
+    return render(request, 'user.html', {'page_template': 'user_home.html', 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'user_home'})
+
 
 
 
 
 @login_required(login_url='login')
 def user_profile(request):
-    return render(request, 'user.html', {'page_template': 'user_profile.html'})
+    return render(request, 'user.html', {
+        'page_template': 'user_profile.html',
+        'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'user_profile'  # 标记为 '个人信息' 链接
+    })
+
 
 
 
@@ -147,12 +154,14 @@ def editor_users(request):
             # 如果表单有效，保存更新的用户资料
             form.save()
             messages.success(request, "信息修改成功！")
-            return render(request, 'user.html', {'page_template': 'user_profile.html'})
+            return render(request, 'user.html', {'page_template': 'user_profile.html','active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'user_profile'})
     else:
         # 如果是 GET 请求，渲染空表单
         form = UserProfileForm(instance=user_profile)
 
-    return render(request, 'user.html', {'page_template': 'editor_users.html', 'form': form})
+    return render(request, 'user.html', {'page_template': 'editor_users.html', 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'user_profile'})
 
 
 
@@ -161,7 +170,8 @@ def editor_users(request):
 
 @login_required(login_url='login')
 def account_safety(request):
-    return render(request, 'user.html', {'page_template': 'account_safety.html'})
+    return render(request, 'user.html', {'page_template': 'account_safety.html', 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'account_safety'})
 
 
 
@@ -177,15 +187,18 @@ def change_email(request):
             request.user.save()
 
             messages.success(request, '邮箱地址已成功更换！')
-            return render(request, 'user.html', {'page_template': 'account_safety.html'})
+            return render(request, 'user.html', {'page_template': 'account_safety.html', 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'account_safety'})
         else:
             # 表单无效，返回带错误信息的页面
-            return render(request, 'user.html', {'page_template': 'change_email.html', 'form': form})
+            return render(request, 'user.html', {'page_template': 'change_email.html', 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'account_safety'})
 
     else:
         form = ChangeEmailForm(user=request.user)  # 初始化表单
 
-    return render(request, 'user.html', {'page_template': 'change_email.html', 'form': form})
+    return render(request, 'user.html', {'page_template': 'change_email.html', 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'account_safety'})
 
 
 
@@ -204,15 +217,17 @@ def change_password(request):
             update_session_auth_hash(request, request.user)
 
             messages.success(request, '密码修改成功！')
-            return render(request, 'user.html', {'page_template': 'account_safety.html'})
+            return render(request, 'user.html', {'page_template': 'account_safety.html', 'active_menu': 'user-info', 'active_link': 'account_safety'})
         else:
             # 如果表单无效，将错误信息显示到页面
-            return render(request, 'user.html', {'page_template': 'change_password.html', 'form': form})
+            return render(request, 'user.html', {'page_template': 'change_password.html', 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'account_safety'})
 
     else:
         form = ChangePasswordForm(user=request.user)  # 初始化时传递当前用户
 
-    return render(request, 'user.html', {'page_template': 'change_password.html', 'form': form})
+    return render(request, 'user.html', {'page_template': 'change_password.html', 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+        'active_link': 'account_safety'})
 
 
 

@@ -158,6 +158,16 @@
         .edit-link:hover {
             background-color: #0056b3;
         }
+        /* 选中项样式 */
+        .sidebar .active-link {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* 默认展开状态 */
+        .sidebar .submenu.active {
+            display: block;
+        }
 
     </style>
 
@@ -168,21 +178,26 @@
     <div class="container">
         <!-- 左侧导航栏 -->
         <div class="sidebar">
-            <h3 onclick="toggleSubmenu('user-info')">个人中心</h3>
-            <ul id="user-info" class="submenu">
-                <li><a href="{% url 'users:user_home' %}">个人主页</a></li>
-                <li><a href="{% url 'users:user_profile' %}">个人信息</a></li>
-                <li><a href="{% url 'users:account_safety' %}">账号安全</a></li>
-            </ul>
-            <h3 onclick="toggleSubmenu('content-manage')">内容管理</h3>
-            <ul id="content-manage" class="submenu">
-                <li><a href="{% url 'blog:create_post' %}">添加文章</a></li>
-                <li><a href="{% url 'blog:my_posts' %}">已发布</a></li>
-                <li><a href="{% url 'blog:draft_list' %}">草稿箱</a></li>
-                <li><a href="#">评论管理</a></li>
+    <!-- 个人中心 -->
+    <h3 id="user-info-header" onclick="toggleSubmenu('user-info')"
+        class="{% if active_menu == 'user-info' %}active{% endif %}">个人中心</h3>
+    <ul id="user-info" class="submenu{% if active_menu == 'user-info' %} active{% endif %}">
+        <li><a href="{% url 'users:user_home' %}" class="{% if active_link == 'user_home' %}active-link{% endif %}">个人主页</a></li>
+        <li><a href="{% url 'users:user_profile' %}" class="{% if active_link == 'user_profile' %}active-link{% endif %}">个人信息</a></li>
+        <li><a href="{% url 'users:account_safety' %}" class="{% if active_link == 'account_safety' %}active-link{% endif %}">账号安全</a></li>
+    </ul>
 
-            </ul>
-        </div>
+    <!-- 内容管理 -->
+    <h3 id="content-manage-header" onclick="toggleSubmenu('content-manage')"
+        class="{% if active_menu == 'content-manage' %}active{% endif %}">内容管理</h3>
+    <ul id="content-manage" class="submenu{% if active_menu == 'content-manage' %} active{% endif %}">
+        <li><a href="{% url 'blog:create_post' %}" class="{% if active_link == 'create_post' %}active-link{% endif %}">添加文章</a></li>
+        <li><a href="{% url 'blog:my_posts' %}" class="{% if active_link == 'my_posts' %}active-link{% endif %}">已发布</a></li>
+        <li><a href="{% url 'blog:draft_list' %}" class="{% if active_link == 'draft_list' %}active-link{% endif %}">草稿箱</a></li>
+        <li><a href="#">评论管理</a></li>
+    </ul>
+</div>
+
 
         <!-- 右侧内容区 -->
         <div class="content-wrapper">
