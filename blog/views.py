@@ -58,3 +58,13 @@ def create_post(request):
     else:
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
+
+
+
+
+
+@login_required  # 确保只有登录用户才能访问该页面
+def my_posts(request):
+    # 获取当前用户的博客
+    posts = Post.objects.filter(owner=request.user).order_by('-pub_date')
+    return render(request, 'my_posts.html', {'posts': posts})

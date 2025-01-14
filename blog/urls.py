@@ -13,4 +13,5 @@ urlpatterns = [
     path('category/<int:category_id>/', views.category_detail, name='category_detail'),  # 某个分类的博文
 
     path('create/', views.create_post, name='create_post'),
+    path('my-posts/', views.my_posts, name='my_posts'),
 ]
