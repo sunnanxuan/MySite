@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} 的文章{% endblock %}
+
+
+{% block css %}{% endblock %}
+
+
+{% block content %}
+
+    <h1>{{ category.name }} 分类的文章</h1>
+    <section class="section">
+        <div class="container blog-container">
+            {% for post in posts %}
+                <div class="box blog-box">
+                    <h1 class="title">
+                        <a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
+                    </h1>
+                    <p class="subtitle">
+                        作者：{{ post.owner.username }} 发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}
+                    </p>
+                    <p>{{ post.content|truncatechars:50 }}</p>
+                </div>
+            {% empty %}
+            <li>该分类下暂无文章</li>
+            {% endfor %}
+        </div>
+    </section>
+    <a href="{% url 'blog:category_list' %}">返回分类列表</a>
+
+{% endblock %}

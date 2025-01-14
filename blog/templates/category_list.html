@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}分类{% endblock %}
+
+
+{% block css %}{% endblock %}
+
+
+{% block content %}
+
+    <h1>所有分类</h1>
+    <ul>
+        {% for category in categories %}
+            <li>
+                <a href="{% url 'blog:category_detail' category.id %}">{{ category.name }}</a>  <!-- 分类详情链接 -->
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

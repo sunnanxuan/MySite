@@ -42,7 +42,7 @@
         <div class="container blog-container">
             {% for post in post_list %}
                 <div class="box blog-box">
-                    <h1 class="title">{{ post.title }}</h1>
+                    <h1 class="title"><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a> </h1>
                     <p class="subtitle">
                         作者：{{ post.owner.username }} 发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}
                     </p>

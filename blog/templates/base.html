@@ -42,7 +42,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li><a href="{% url 'blog:index' %}">首页<span class="sr-only">(current)</span></a></li>
-                <li><a href="#">分类</a></li>
+                <li><a href="{% url 'blog:category_list' %}">分类</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -74,6 +74,8 @@
     </div><!-- /.container-fluid -->
 </nav>
 
+
+{% block content %}
 <div class="container content-container">
     <div class="row">
         <div class="col-md-9 content-left">
@@ -86,6 +88,8 @@
         </div>
     </div>
 </div>
+
+ {% endblock %}
 
 {% block footer %}{% endblock %}
 
