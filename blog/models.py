@@ -103,6 +103,7 @@ class Sidebar(models.Model):
     status = models.PositiveIntegerField(default=2,choices=STATUS,verbose_name='状态')
     add_date = models.DateTimeField(auto_now_add=True,verbose_name="创建时间")
 
+
     class Meta:
         verbose_name="侧边栏"
         verbose_name_plural = verbose_name
