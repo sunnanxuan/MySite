@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 from django.contrib import messages
+from django.db.models import Q
 
 
 
@@ -117,3 +118,17 @@ def delete_draft(request, post_id):
         messages.success(request, "草稿已成功删除。")
         return redirect('blog:draft_list')
     return HttpResponseForbidden("不允许的操作")
+
+
+
+def search(request):
+    keywords = request.GET.get('keywords')
+    if not keywords:
+        post_list = Post.objects.all()
+    else:
+        post_list = Post.objects.filter(Q(title__icontains=keywords)|Q(content__icontains=keywords)|Q(desc__icontains=keywords))
+    context = {'post_list': post_list}
+
+    return render(request, 'index.html', context)
+
+

@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+<form method="GET" action="{% url 'blog:search' %}" class="search-form">
+    <input
+            type="text"
+            name="keywords"
+            placeholder="Search posts..."
+            value="{{ request.GET.keywords|default_if_none:'' }}"
+            class="search-input"
+    >
+    <button type="submit" class="search-button">搜索</button>
+</form>
