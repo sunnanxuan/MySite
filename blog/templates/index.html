@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load category %}
 
 {% block title %}首页{% endblock %}
 
@@ -54,6 +55,14 @@
 {% endblock %}
 
 {% block content_right %}
+    {% get_sidebar_list as sidebar_list %}
+
+    {% for sidebar in sidebar_list %}
+        <div class="blog-box">
+        <h3>{{ sidebar.title }}</h3>
+        <p>{{ sidebar.get_content|safe }}</p>
+        </div>
+    {% endfor %}
 
 
 {% endblock %}

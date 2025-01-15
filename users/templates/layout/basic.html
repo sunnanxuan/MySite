@@ -42,7 +42,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li><a href="{% url 'blog:index' %}">首页<span class="sr-only">(current)</span></a></li>
-                <li><a href="#">分类</a></li>
+                <li><a href="{% url 'blog:category_list' %}">分类</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -58,7 +58,7 @@
             <ul class="dropdown-menu">
                 <li><a href="{% url 'users:user_home' %}">个人中心</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#">设置</a></li>
+                <li><a href="#">消息</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url 'users:logout' %}">退 出</a></li>
             </ul>

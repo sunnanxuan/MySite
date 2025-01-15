@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.models import Category,Post,Tag
+from blog.models import Category,Post,Tag,Sidebar
 # Register your models here.
 
 
@@ -8,3 +8,4 @@ from blog.models import Category,Post,Tag
 admin.site.register(Category)
 admin.site.register(Post)
 admin.site.register(Tag)
+admin.site.register(Sidebar)
