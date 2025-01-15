@@ -9,7 +9,9 @@
     <article>
         <header>
             <h1>{{ post.title }}</h1>
-            <p>作者：<strong>{{ post.owner.username }}</strong></p>
+            <p>作者：<strong>{{ post.owner.username }}</strong>
+        | 发布日期：<strong>{{ post.created_at|date:"Y-m-d H:i" }}</strong>
+        | 浏览量：<strong>{{ post.pv }}</strong></p>
             <p>分类：<a href="{% url 'blog:category_detail' post.category.id %}">{{ post.category.name }}</a></p>
             <p>标签：<span>{{ post.tags.name }}</span></p>
         </header>

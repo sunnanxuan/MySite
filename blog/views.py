@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, F
 
 
 
@@ -22,6 +22,7 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     prev_post = Post.objects.filter(id__lt=post_id).order_by('-id').first()
     next_post = Post.objects.filter(id__gt=post_id).order_by('id').first()
+    Post.objects.filter(id=post_id).update(pv=F('pv')+1) #此方法有bug，暂时这样仅做此路
     previous_url = request.META.get('HTTP_REFERER', None)
 
     return render(request, 'post_detail.html', {

@@ -22,3 +22,16 @@ def get_sidebar_list():
 def get_new_post():
     return Post.objects.order_by('-pub_date')[:8]
 
+
+
+
+@register.simple_tag
+def get_hot_post():
+    return Post.objects.filter(is_hot=True)[:8]
+
+
+
+
+@register.simple_tag
+def get_hot_pv_post():
+    return Post.objects.order_by('-pv')[:8]
