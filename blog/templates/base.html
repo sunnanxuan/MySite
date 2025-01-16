@@ -22,6 +22,52 @@
             height: 50px; /* 设置头像高度 */
             border-radius: 50%; /* 使头像为圆形 */
             object-fit: cover; /* 保证头像不会变形，保持比例 */
+
+
+        }
+
+        .footer {
+            background-color: #E8E8E8; /* 深色背景 */
+            color: #fff; /* 白色字体 */
+            padding: 10px 0; /* 上下内边距 */
+            font-family: 'Arial', sans-serif; /* 字体 */
+            text-align: center;
+            height: 80px;
+        }
+
+        .footer p {
+            font-size: 16px; /* 设置字体大小 */
+            margin-bottom: 5px;
+        }
+
+        .social-icons {
+            margin-top: 5px;
+        }
+
+        .social-icon {
+            margin: 0 10px;
+            color: #fff;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: #1C1C1C; /* 悬停时改变颜色 */
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 10px 0;
+            }
+
+            .social-icons {
+                margin-top: 10px;
+            }
+
+            .social-icon {
+                margin: 0 8px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -102,8 +148,21 @@
 
 {% endblock %}
 
-{% block footer %}{% endblock %}
 
+
+{% block footer %}
+    <footer class="footer">
+        <div class="container text-center">
+            <p>© 2025 MyBlog. All Rights Reserved.</p>
+            <div class="social-icons">
+                <a href="#" class="social-icon"><i class="fa fa-facebook"></i></a>
+                <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+                <a href="#" class="social-icon"><i class="fa fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
 
 <script src="{% static 'js/jquery-3.7.1.js' %}"></script>
 <script src="{% static 'plugin/bootstrap/js/bootstrap.min.js' %}"></script>

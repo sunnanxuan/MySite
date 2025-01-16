@@ -12,12 +12,30 @@
             margin: 0 auto; /* 水平居中 */
         }
 
+        .small-title {
+            font-size: 22px; /* 设置标题为较小的字体 */
+            font-weight: bold;
+        }
+
+        .post-info {
+            color: #888; /* 设置作者和发布时间为灰色 */
+            margin-top: 10px; /* 在作者和发布时间之间增加一些空隙 */
+        }
+
+        .author {
+            margin-right: 40px; /* 增加作者和发布时间之间的水平距离 */
+        }
+
+        .date {
+            color: #888; /* 保持日期为灰色 */
+        }
+
         .blog-box {
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
             padding: 20px;
             background-color: #fff;
             margin-bottom: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
         .blog-box:hover {
@@ -28,7 +46,7 @@
         /* 美化分页导航 */
         .pagination {
             margin: 20px 0;
-            justify-content: center;
+            margin-left: 40px; /* 使分页向右移动 */
         }
 
         .pagination a {
@@ -48,34 +66,25 @@
             background-color: #0056b3;
             font-weight: bold;
         }
-
-        /* 美化页脚 */
-        .footer {
-            background-color: #f5f5f5; /* 灰色背景 */
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        .footer p {
-            color: #777; /* 字体颜色灰色 */
-            margin: 0;
-        }
     </style>
 {% endblock %}
+
+
 
 {% block content_left %}
     <section class="section">
         <div class="container blog-container">
-            {% for post in post_list %}
-                <div class="box blog-box">
-                    <h1 class="title"><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a></h1>
-                    <p class="subtitle">
-                        作者：{{ post.owner.username }} 发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}
-                    </p>
-                    <p>{{ post.content|truncatechars:50 }}</p>
-                </div>
-            {% endfor %}
+    {% for post in post_list %}
+        <div class="box blog-box">
+            <h1 class="title small-title"><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a></h1>
+            <p class="subtitle post-info">
+                <span class="author">作者：{{ post.owner.username }}</span>
+                <span class="date">发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}</span>
+            </p>
+            <p>{{ post.content|truncatechars:50 }}</p>
         </div>
+    {% endfor %}
+</div>
 
 
         <nav aria-label="Page navigation">
@@ -125,13 +134,6 @@
 
 
 
-{% block footer %}
-    <footer class="footer">
-        <div class="content has-text-centered">
-            <p>这是博客的底部</p>
-        </div>
-    </footer>
-{% endblock %}
 
 {% block js %}
 {% endblock %}
