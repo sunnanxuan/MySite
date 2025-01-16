@@ -35,3 +35,9 @@ def get_hot_post():
 @register.simple_tag
 def get_hot_pv_post():
     return Post.objects.order_by('-pv')[:8]
+
+
+
+@register.simple_tag
+def get_archives():
+    return Post.objects.dates('add_date', 'month', order='DESC')[:8]

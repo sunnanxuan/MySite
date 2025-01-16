@@ -127,9 +127,20 @@ def search(request):
     if not keywords:
         post_list = Post.objects.all()
     else:
-        post_list = Post.objects.filter(Q(title__icontains=keywords)|Q(content__icontains=keywords)|Q(desc__icontains=keywords))
+        post_list = Post.objects.filter(
+            Q(title__icontains=keywords) | Q(content__icontains=keywords) | Q(desc__icontains=keywords),
+            status=Post.PUBLISHED
+        )
     context = {'post_list': post_list}
 
     return render(request, 'index.html', context)
+
+
+
+
+def archives(request,year,month):
+    post_list = Post.objects.filter(status=Post.PUBLISHED, add_date__year=year, add_date__month=month)
+    context = {'post_list': post_list, 'year': year, 'month': month}
+    return render(request,'archives_list.html', context)
 
 

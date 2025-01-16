@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% load category %}
+{% get_archives as archives_list %}
+{% for archive in archives_list %}
+    <ul>
+    <li><a href="{% url 'blog:archives' archive.year archive.month %}">{{ archive }}</a> </li>
+    </ul>
+{% endfor %}
