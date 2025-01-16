@@ -7,56 +7,15 @@
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/account.css' %}">
     <style>
-        /* 美化博客部分 */
-        .blog-container {
-            max-width: 800px;
-            margin: 0 auto; /* 水平居中 */
-        }
-        .blog-box {
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #fff;
-            margin-bottom: 20px;
-        }
-        .blog-box:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
-        }
-
-        /* 美化分页导航 */
-        .pagination {
-            margin: 20px 0;
-            justify-content: center;
-        }
-        .pagination a {
-            margin: 0 5px;
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-        .pagination a:hover {
-            background-color: #0056b3;
-        }
-        .pagination .active span {
-            background-color: #0056b3;
-            font-weight: bold;
-            color: white;
-        }
-
-        /* 美化页脚 */
-        .footer {
-            background-color: #f5f5f5; /* 灰色背景 */
-            padding: 20px 0;
-            text-align: center;
-        }
-        .footer p {
-            color: #777; /* 字体颜色灰色 */
-            margin: 0;
-        }
+    .archive-summary {
+        font-size: 0.9em; /* 小字号 */
+        color: #888; /* 灰色字体 */
+        text-align: center; /* 居中对齐 */
+        margin-top: 10px; /* 与其他内容保持间距 */
+        line-height: 1.5; /* 增加行高，提升可读性 */
+    }
     </style>
+
 {% endblock %}
 
 {% block content_left %}
@@ -64,10 +23,10 @@
         <div class="container blog-container">
             {% for post in posts %}
                 <div class="box blog-box">
-                    <h1 class="title">
+                    <h1 class="title small-title">
                         <a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
                     </h1>
-                    <p class="subtitle">
+                    <p class="subtitle post-info">
                         作者：{{ post.owner.username }} 发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}
                     </p>
                     <p>{{ post.content|truncatechars:50 }}</p>
@@ -118,13 +77,9 @@
         </nav>
     </section>
 
-    <div class="box">
-        每月归档：{{ year }}年{{ month }}月
-        <div>
-            <span>共</span>
-            <span>{{ posts.paginator.count }}篇</span>
-        </div>
-    </div>
+<div class="archive-summary">
+    每月归档：{{ year }}年{{ month }}月，共 {{ posts.paginator.count }} 篇
+</div>
 {% endblock %}
 
 {% block js %}
