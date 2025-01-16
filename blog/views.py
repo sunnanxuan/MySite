@@ -7,15 +7,31 @@ from django.utils import timezone
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.db.models import Q, F
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render
+from .models import Post
 
 
 def index(request):
+    # 获取已发布的文章
     post_list = Post.objects.filter(status=Post.PUBLISHED)
-    context = {'post_list': post_list}
+
+    # 设置每页显示文章数
+    paginator = Paginator(post_list, 5)  # 每页 5 篇文章
+    page = request.GET.get('page')  # 获取当前页码
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)  # 如果页码不是整数，返回第一页
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)  # 如果超出页码范围，返回最后一页
+
+    # 渲染模板并传递分页后的文章列表
+    context = {'post_list': posts}
     return render(request, 'index.html', context)
-
-
 
 
 def post_detail(request, post_id):
@@ -46,7 +62,20 @@ def category_list(request):
 def category_detail(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     # 仅获取状态为已发布的文章
-    posts = Post.objects.filter(category=category, status=Post.PUBLISHED)
+    post_list = Post.objects.filter(category=category, status=Post.PUBLISHED)
+
+    # 分页逻辑
+    paginator = Paginator(post_list, 5)  # 每页显示5篇文章
+    page = request.GET.get('page', 1)  # 获取当前页码
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        # 如果页码不是整数，返回第一页
+        posts = paginator.page(1)
+    except EmptyPage:
+        # 如果页码超出范围，返回最后一页
+        posts = paginator.page(paginator.num_pages)
+
     return render(request, 'category_detail.html', {'category': category, 'posts': posts})
 
 
@@ -136,11 +165,24 @@ def search(request):
     return render(request, 'index.html', context)
 
 
+def archives(request, year, month):
+    post_queryset = Post.objects.filter(
+        status=Post.PUBLISHED,
+        add_date__year=year,
+        add_date__month=month
+    )
 
+    # 分页
+    paginator = Paginator(post_queryset, 5)  # 每页 5 篇文章
+    page = request.GET.get('page')
 
-def archives(request,year,month):
-    post_list = Post.objects.filter(status=Post.PUBLISHED, add_date__year=year, add_date__month=month)
-    context = {'post_list': post_list, 'year': year, 'month': month}
-    return render(request,'archives_list.html', context)
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
 
+    context = {'posts': posts, 'year': year, 'month': month}
+    return render(request, 'archives_list.html', context)
 

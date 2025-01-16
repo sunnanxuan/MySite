@@ -1,4 +1,5 @@
 {% load static %}
+{% load category %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,21 +7,22 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'plugin/bootstrap/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 
     {% block css %}{% endblock %}
     <style>
         .user-avatar {
-    display: inline-block; /* 使头像与用户名水平对齐 */
-    vertical-align: middle; /* 垂直居中 */
-    margin-right: 10px; /* 头像与用户名之间的间距 */
-}
+            display: inline-block; /* 使头像与用户名水平对齐 */
+            vertical-align: middle; /* 垂直居中 */
+            margin-right: 10px; /* 头像与用户名之间的间距 */
+        }
 
-.avatar-img {
-    width: 50px; /* 设置头像宽度 */
-    height: 50px; /* 设置头像高度 */
-    border-radius: 50%; /* 使头像为圆形 */
-    object-fit: cover; /* 保证头像不会变形，保持比例 */
-}
+        .avatar-img {
+            width: 50px; /* 设置头像宽度 */
+            height: 50px; /* 设置头像高度 */
+            border-radius: 50%; /* 使头像为圆形 */
+            object-fit: cover; /* 保证头像不会变形，保持比例 */
+        }
     </style>
 </head>
 <body>
@@ -46,28 +48,28 @@
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
-    {% if request.user.is_authenticated %}
-        <li class="user-avatar">
-            <img src="{{ request.user.userprofile.image.url }}" alt="User Avatar" class="avatar-img">
-        </li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-               aria-expanded="false">
-               {{ request.user.username }}<span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li><a href="{% url 'users:user_home' %}">个人中心</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">消息</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url 'users:logout' %}">退 出</a></li>
+                {% if request.user.is_authenticated %}
+                    <li class="user-avatar">
+                        <img src="{{ request.user.userprofile.image.url }}" alt="User Avatar" class="avatar-img">
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">
+                            {{ request.user.username }}<span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'users:user_home' %}">个人中心</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">消息</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url 'users:logout' %}">退 出</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'users:login' %}">登录</a></li>
+                    <li><a href="{% url 'users:register' %}" target="_blank">注册</a></li>
+                {% endif %}
             </ul>
-        </li>
-    {% else %}
-        <li><a href="{% url 'users:login' %}">登录</a></li>
-        <li><a href="{% url 'users:register' %}" target="_blank">注册</a></li>
-    {% endif %}
-</ul>
 
 
         </div><!-- /.navbar-collapse -->
@@ -76,21 +78,29 @@
 
 
 {% block content %}
-<div class="container content-container">
-    <div class="row">
-        <div class="col-md-9 content-left">
-            {% block content_left %}
+    <div class="container content-container">
+        <div class="row">
+            <div class="col-md-9 content-left">
+                {% block content_left %}
 
-            {% endblock %}
-        </div>
-        <div class="col-md-3 content-right">
-            {% block content_right %}
-            {% endblock %}
+                {% endblock %}
+            </div>
+            <div class="col-md-3 content-right">
+                {% block content_right %}
+                    {% get_sidebar_list as sidebar_list %}
+
+                    {% for sidebar in sidebar_list %}
+                        <div class="blog-box">
+                            <h3>{{ sidebar.title }}</h3>
+                            <p>{{ sidebar.get_content|safe }}</p>
+                        </div>
+                    {% endfor %}
+                {% endblock %}
+            </div>
         </div>
     </div>
-</div>
 
- {% endblock %}
+{% endblock %}
 
 {% block footer %}{% endblock %}
 
