@@ -10,66 +10,6 @@
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 
     {% block css %}{% endblock %}
-    <style>
-        .user-avatar {
-            display: inline-block; /* 使头像与用户名水平对齐 */
-            vertical-align: middle; /* 垂直居中 */
-            margin-right: 10px; /* 头像与用户名之间的间距 */
-        }
-
-        .avatar-img {
-            width: 50px; /* 设置头像宽度 */
-            height: 50px; /* 设置头像高度 */
-            border-radius: 50%; /* 使头像为圆形 */
-            object-fit: cover; /* 保证头像不会变形，保持比例 */
-
-
-        }
-
-        .footer {
-            background-color: #E8E8E8; /* 深色背景 */
-            color: #fff; /* 白色字体 */
-            padding: 10px 0; /* 上下内边距 */
-            font-family: 'Arial', sans-serif; /* 字体 */
-            text-align: center;
-            height: 80px;
-        }
-
-        .footer p {
-            font-size: 16px; /* 设置字体大小 */
-            margin-bottom: 5px;
-        }
-
-        .social-icons {
-            margin-top: 5px;
-        }
-
-        .social-icon {
-            margin: 0 10px;
-            color: #fff;
-            font-size: 20px;
-            transition: color 0.3s ease;
-        }
-
-        .social-icon:hover {
-            color: #1C1C1C; /* 悬停时改变颜色 */
-        }
-
-        @media (max-width: 768px) {
-            .footer {
-                padding: 10px 0;
-            }
-
-            .social-icons {
-                margin-top: 10px;
-            }
-
-            .social-icon {
-                margin: 0 8px;
-                font-size: 18px;
-            }
-        }
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-default">

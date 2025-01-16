@@ -1,0 +1,121 @@
+.user-avatar {
+            display: inline-block; /* 使头像与用户名水平对齐 */
+            vertical-align: middle; /* 垂直居中 */
+            margin-right: 10px; /* 头像与用户名之间的间距 */
+        }
+
+        .avatar-img {
+            width: 50px; /* 设置头像宽度 */
+            height: 50px; /* 设置头像高度 */
+            border-radius: 50%; /* 使头像为圆形 */
+            object-fit: cover; /* 保证头像不会变形，保持比例 */
+
+
+        }
+
+        .footer {
+            background-color: #E8E8E8; /* 深色背景 */
+            color: #fff; /* 白色字体 */
+            padding: 10px 0; /* 上下内边距 */
+            font-family: 'Arial', sans-serif; /* 字体 */
+            text-align: center;
+            height: 80px;
+        }
+
+        .footer p {
+            font-size: 16px; /* 设置字体大小 */
+            margin-bottom: 5px;
+        }
+
+        .social-icons {
+            margin-top: 5px;
+        }
+
+        .social-icon {
+            margin: 0 10px;
+            color: #fff;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: #1C1C1C; /* 悬停时改变颜色 */
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 10px 0;
+            }
+
+            .social-icons {
+                margin-top: 10px;
+            }
+
+            .social-icon {
+                margin: 0 8px;
+                font-size: 18px;
+            }
+        }
+
+
+
+
+.blog-container {
+            max-width: 800px;
+            margin: 0 auto; /* 水平居中 */
+        }
+
+        .small-title {
+            font-size: 22px; /* 设置标题为较小的字体 */
+            font-weight: bold;
+        }
+
+        .post-info {
+            color: #888; /* 设置作者和发布时间为灰色 */
+            margin-top: 10px; /* 在作者和发布时间之间增加一些空隙 */
+        }
+
+        .author {
+            margin-right: 40px; /* 增加作者和发布时间之间的水平距离 */
+        }
+
+        .date {
+            color: #888; /* 保持日期为灰色 */
+        }
+
+        .blog-box {
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .blog-box:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        /* 美化分页导航 */
+        .pagination {
+            margin: 20px 0;
+            margin-left: 40px; /* 使分页向右移动 */
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background-color: #0056b3;
+        }
+
+        .pagination a.is-current {
+            background-color: #0056b3;
+            font-weight: bold;
+        }

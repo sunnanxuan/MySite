@@ -7,72 +7,67 @@
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
     <style>
-        .blog-container {
-            max-width: 800px;
-            margin: 0 auto; /* 水平居中 */
+        .breadcrumb {
+            position: fixed; /* 固定定位，随页面滚动不动 */
+            top: 50px; /* 与顶部对齐 */
+            left: 0; /* 与左侧对齐 */
+            width: 100%; /* 占满宽度 */
+            background-color: transparent; /* 背景色与导航条一致 */
+            padding: 10px 15px; /* 内间距 */
+            margin: 0; /* 清除外边距 */
+            list-style: none; /* 去掉列表样式 */
+            display: flex;
+            font-size: 1.2em;
+
         }
 
-        .blog-box {
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #fff;
-            margin-bottom: 20px;
+
+        .breadcrumb li {
+            margin-right: 5px;
+            color: #6c757d; /* 字体颜色为灰色 */
         }
 
-        .blog-box:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
-        }
-
-        /* 美化分页导航 */
-        .pagination {
-            margin: 20px 0;
-            justify-content: center;
-        }
-
-        .pagination a {
-            margin: 0 5px;
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
+        .breadcrumb li a {
+            color: #6c757d; /* 链接颜色也为灰色 */
             text-decoration: none;
         }
 
-        .pagination a:hover {
-            background-color: #0056b3;
+        .breadcrumb li a:hover {
+            text-decoration: underline;
         }
 
-        .pagination .active span {
-            background-color: #0056b3;
-            font-weight: bold;
-            color: white;
+        .breadcrumb li.active {
+            color: #6c757d;
         }
 
-        /* 美化页脚 */
-        .footer {
-            background-color: #f5f5f5; /* 灰色背景 */
-            padding: 20px 0;
-            text-align: center;
+        .breadcrumb li::after {
+
+            margin-left: 5px;
+            color: #6c757d;
         }
 
-        .footer p {
-            color: #777; /* 字体颜色灰色 */
-            margin: 0;
+        .breadcrumb li:last-child::after {
+            content: "»";
         }
     </style>
 {% endblock %}
 
 {% block content_left %}
+    <!-- 面包屑导航 -->
+    <ol class="breadcrumb">
+        <li><a href="{% url 'blog:index' %}">首页</a></li>
+        <li><a href="{% url 'blog:category_list' %}">分类</a></li>
+        <li class="active">{{ category.name }}</li>
+    </ol>
+
     <section class="section">
         <div class="container blog-container">
             {% for post in posts %}
                 <div class="box blog-box">
-                    <h1 class="title">
+                    <h1 class="title small-title">
                         <a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
                     </h1>
-                    <p class="subtitle">
+                    <p class="subtitle post-info">
                         作者：{{ post.owner.username }} 发布日期：{{ post.add_date|date:"Y年m月d日 H:i" }}
                     </p>
                     <p>{{ post.content|truncatechars:50 }}</p>
@@ -122,17 +117,7 @@
             </ul>
         </nav>
     </section>
-    <a href="{% url 'blog:category_list' %}">返回分类列表</a>
 {% endblock %}
-
-{% block footer %}
-    <footer class="footer">
-        <div class="content has-text-centered">
-            <p>这是博客的底部</p>
-        </div>
-    </footer>
-{% endblock %}
-
 
 
 
