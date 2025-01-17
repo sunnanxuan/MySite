@@ -19,5 +19,6 @@ urlpatterns = [
     path('drafts/delete/<int:post_id>/', views.delete_draft, name='delete_draft'),
     path('search/', views.search, name='search'),
     path('archives/<int:year>/<int:month>/', views.archives, name='archives'),
+    path('post/<int:post_id>/comment/', views.add_comment, name='add_comment'),
 
 ]

@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import Category, Post
+from .models import Category, Post,Comment
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -8,10 +8,7 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
-from .models import Post
 
 
 def index(request):
@@ -186,3 +183,17 @@ def archives(request, year, month):
     context = {'posts': posts, 'year': year, 'month': month}
     return render(request, 'archives_list.html', context)
 
+
+
+
+@login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            Comment.objects.create(post=post, user=request.user, content=content)
+            messages.success(request, "评论提交成功！")
+        else:
+            messages.error(request, "评论内容不能为空！")
+    return redirect("blog:post_detail", post_id=post_id)
