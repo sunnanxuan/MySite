@@ -1,6 +1,4 @@
 
-{% block title %}草稿箱{% endblock %}
-
 {% block content %}
     <h1>草稿箱</h1>
     <ul>
@@ -13,6 +11,5 @@
             <p>暂无草稿。</p>
         {% endfor %}
     </ul>
-    <a href="{% url 'blog:create_post' %}" class="btn btn-primary">新建博客</a>
     <a href="{% url 'blog:index' %}" class="btn btn-secondary">返回首页</a>
 {% endblock %}

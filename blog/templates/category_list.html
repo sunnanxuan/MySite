@@ -3,19 +3,76 @@
 
 {% block title %}分类{% endblock %}
 
+{% block css %}
+<style>
+    /* 整体布局 */
+    .categories-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        height: 540px;
+    }
 
-{% block css %}{% endblock %}
+    /* 标题样式 */
+    .categories-container h1 {
+        font-size: 2em;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        display: inline-block;
+    }
 
+    /* 分类列表样式 */
+    .categories-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .categories-list li {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 10px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .categories-list li:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .categories-list a {
+        text-decoration: none;
+        color: #1C1C1C;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .categories-list a:hover {
+        color: #0056b3;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-
+<div class="categories-container">
     <h1>所有分类</h1>
-    <ul>
+    <ul class="categories-list">
         {% for category in categories %}
             <li>
-                <a href="{% url 'blog:category_detail' category.id %}">{{ category.name }}</a>  <!-- 分类详情链接 -->
+                <a href="{% url 'blog:category_detail' category.id %}">{{ category.name }}</a>
             </li>
         {% endfor %}
     </ul>
-
+</div>
 {% endblock %}
