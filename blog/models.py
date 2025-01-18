@@ -77,6 +77,26 @@ class Post(models.Model):
     add_date = models.DateTimeField(auto_now_add=True, verbose_name="添加时间")
     pub_date = models.DateTimeField(auto_now=True, verbose_name="修改时间")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=DRAFT, verbose_name="状态")
+    liked_users = models.ManyToManyField(
+        User,
+        related_name="liked_posts",
+        blank=True,
+        verbose_name="点赞用户",
+    )
+    favorited_users = models.ManyToManyField(
+        User,
+        related_name="favorited_posts",
+        blank=True,
+        verbose_name="收藏用户",
+    )
+
+    def total_likes(self):
+        """获取点赞总数"""
+        return self.liked_users.count()
+
+    def total_favorites(self):
+        """获取收藏总数"""
+        return self.favorited_users.count()
 
     class Meta:
         verbose_name = "文章"

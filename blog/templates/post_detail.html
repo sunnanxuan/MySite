@@ -63,18 +63,14 @@
         }
 
         /* 导航部分样式 */
-        .post-navigation-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
 
         .post-navigation {
+            margin: auto;
             display: flex;
             justify-content: space-between;
+            padding-left: 10px;
+
+
         }
 
         .post-navigation a {
@@ -92,12 +88,22 @@
             color: #999;
         }
 
-        /* 评论部分样式 */
+        /* 点赞和收藏按钮样式 */
+        .like-favorite-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
 
+        .like-section, .favorite-section {
+            margin: 0;
+        }
+
+        /* 评论部分样式 */
         .comments-section {
             max-width: 800px; /* 与正文宽度一致 */
-        margin: 40px auto;
-
+            margin: 40px auto;
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 8px;
@@ -146,15 +152,13 @@
         }
 
         /* 评论表单样式 */
-
         .comment-form {
             max-width: 800px; /* 与正文宽度一致 */
-        margin: 30px auto; /* 居中对齐 */
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
+            margin: 30px auto; /* 居中对齐 */
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .comment-form textarea {
@@ -194,11 +198,30 @@
             text-decoration: underline;
         }
 
+        /* 返回按钮样式 */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
 
     </style>
 {% endblock %}
 
 {% block content %}
+
     <article>
         <header>
             <h1>{{ post.title }}</h1>
@@ -219,12 +242,6 @@
             <p>{{ post.content|safe }}</p>
         </section>
 
-        <footer>
-            <a href="{{ previous_url|default:'#' }}">返回</a>
-        </footer>
-    </article>
-
-    <div class="post-navigation-container">
         <nav aria-label="文章导航">
             <ul class="post-navigation">
                 <li>
@@ -235,6 +252,23 @@
                         <span class="no-prev-post">已经是第一篇文章了</span>
                     {% endif %}
                 </li>
+
+                <!-- 插入点赞和收藏按钮 -->
+                <li class="like-favorite-buttons">
+                    <div class="like-section">
+                        {% csrf_token %}
+                        <button id="like-button" data-post-id="{{ post.id }}">
+                            👍 点赞 (<span id="like-count">{{ post.total_likes }}</span>)
+                        </button>
+                    </div>
+                    <div class="favorite-section">
+                        {% csrf_token %}
+                        <button id="favorite-button" data-post-id="{{ post.id }}">
+                            ⭐ 收藏 (<span id="favorite-count">{{ post.total_favorites }}</span>)
+                        </button>
+                    </div>
+                </li>
+
                 <li>
                     {% if next_post %}
                         <a href="{% url 'blog:post_detail' next_post.id %}"
@@ -245,7 +279,7 @@
                 </li>
             </ul>
         </nav>
-    </div>
+    </article>
 
     <div class="comments-section">
         <h2>评论区</h2>
@@ -275,14 +309,89 @@
         </div>
     {% else %}
         <div class="comment-form">
-            <p>请 <a href="{% url 'login' %}">登录</a> 后发表评论。</p>
+            <p>请 <a href="{% url 'users:login' %}">登录</a> 后发表评论。</p>
         </div>
     {% endif %}
 
-
-
 {% endblock %}
 
+{% block js %}
+    <script>
 
+        $(function () {
+            bindClickLike();
+            bindClickFavorite();
+        });
 
+        function bindClickLike() {
+            $('#like-button').click(function (event) {
+                event.preventDefault();
 
+                const postId = $(this).data('post-id');
+
+                const formData = new FormData();
+                formData.append('post_id', postId);
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/post/${postId}/like/`,
+                    data: formData,
+                    dataType: "JSON",
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "X-CSRFToken": $("input[name='csrfmiddlewaretoken']").val(),
+                    },
+                    success: function (res) {
+                        if (res.liked !== undefined) {
+                            $('#like-count').text(res.total_likes);
+                            const buttonText = res.liked ? "👎 取消点赞" : "👍 点赞";
+                            $('#like-button').text(buttonText);
+                        } else {
+                            console.error("后端返回数据格式不正确");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("点赞操作失败：", error);
+                    }
+                });
+            });
+        }
+
+        function bindClickFavorite() {
+            $('#favorite-button').click(function (event) {
+                event.preventDefault();
+
+                const postId = $(this).data('post-id');
+
+                const formData = new FormData();
+                formData.append('post_id', postId);
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/post/${postId}/favorite/`,
+                    data: formData,
+                    dataType: "JSON",
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "X-CSRFToken": $("input[name='csrfmiddlewaretoken']").val(),
+                    },
+                    success: function (res) {
+                        if (res.favorited !== undefined) {
+                            $('#favorite-count').text(res.total_favorites);
+                            const buttonText = res.favorited ? "⭐ 取消收藏" : "⭐ 收藏";
+                            $('#favorite-button').text(buttonText);
+                        } else {
+                            console.error("后端返回数据格式不正确");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("收藏操作失败：", error);
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}

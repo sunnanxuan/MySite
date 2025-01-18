@@ -4,7 +4,7 @@ from .models import Category, Post,Comment
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -42,7 +42,6 @@ def post_detail(request, post_id):
         'post': post,
         'prev_post': prev_post,
         'next_post': next_post,
-        'previous_url': previous_url,
     })
 
 
@@ -197,3 +196,31 @@ def add_comment(request, post_id):
         else:
             messages.error(request, "评论内容不能为空！")
     return redirect("blog:post_detail", post_id=post_id)
+
+
+
+@login_required
+def like_post(request, post_id):
+    """点赞博客"""
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.liked_users.all():
+        post.liked_users.remove(request.user)  # 取消点赞
+        liked = False
+    else:
+        post.liked_users.add(request.user)  # 添加点赞
+        liked = True
+    return JsonResponse({"liked": liked, "total_likes": post.total_likes()})
+
+
+
+@login_required
+def favorite_post(request, post_id):
+    """收藏博客"""
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.favorited_users.all():
+        post.favorited_users.remove(request.user)  # 取消收藏
+        favorited = False
+    else:
+        post.favorited_users.add(request.user)  # 添加收藏
+        favorited = True
+    return JsonResponse({"favorited": favorited, "total_favorites": post.total_favorites()})
