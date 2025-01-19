@@ -17,6 +17,8 @@
         .container {
             display: flex;
             flex-direction: row;
+            padding: 0;
+
 
         }
 
@@ -26,7 +28,7 @@
             background-color: #ffffff;
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            height: 600px;
+            height: 620px;
             overflow-y: auto;
             border-right: 1px solid #ddd; /* 分隔线 */
             flex-shrink: 0; /* 防止缩小 */
@@ -201,12 +203,9 @@
                     </div>
                 </div>
             {% endblock %}
-            <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="{% url 'blog:my_posts' %}">博客</a></li>
-                <li role="presentation"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
-                <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
-                <li role="presentation"><a href="#">评论过</a></li>
-            </ul>
+            {% block nav %}
+
+            {% endblock %}
 
             {% block blogs %}
 

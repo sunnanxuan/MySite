@@ -2,10 +2,10 @@
 
         {% block nav %}
             <ul class="nav nav-tabs">
-                <li role="presentation" ><a href="{% url 'blog:my_posts' %}">博客</a></li>
-                <li role="presentation" ><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
+                <li role="presentation" class="active"><a href="{% url 'blog:my_posts' %}">博客</a></li>
+                <li role="presentation"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
                 <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
-                <li role="presentation" class="active"><a href="{% url 'blog:commented_posts' %}">评论过</a></li>
+                <li role="presentation"><a href="{% url 'blog:commented_posts' %}">评论过</a></li>
             </ul>
             {% endblock %}
 
@@ -21,7 +21,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <p>你还没有评论过任何博客。</p>
+            <p>你还没有发布任何博客。</p>
         {% endif %}
     </div>
 {% endblock %}

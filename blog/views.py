@@ -102,7 +102,7 @@ def my_posts(request):
     posts = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
     return render(
         request,
-        'my_posts.html',
+        'users/my_posts.html',
         {
             'posts': posts,
             'active_menu': 'user-info',  # 设置当前活动的菜单
@@ -114,9 +114,15 @@ def my_posts(request):
 def favorited_posts(request):
     user = request.user
     posts = Post.objects.filter(favorited_users=user)
-    return render(request, 'layout/user.html',
-                  {'page_template': 'users/favorited_posts.html', 'posts': posts, 'active_menu': 'user-info','active_link': 'favorited_posts'})
-
+    return render(
+        request,
+        'users/favorited_posts.html',
+        {
+            'posts': posts,
+            'active_menu': 'user-info',  # 设置当前活动的菜单
+            'active_link': 'my_posts',  # 设置当前活动的链接
+        }
+    )
 
 
 
@@ -124,9 +130,36 @@ def favorited_posts(request):
 def liked_posts(request):
     user = request.user
     posts = Post.objects.filter(liked_users=user)
-    return render(request, 'layout/user.html',
-                  {'page_template': 'users/liked_posts', 'posts': posts, 'active_menu': 'user-info',
-                   'active_link': 'liked_posts'})
+    return render(
+        request,
+        'users/liked_posts.html',
+        {
+            'posts': posts,
+            'active_menu': 'user-info',  # 设置当前活动的菜单
+            'active_link': 'my_posts',  # 设置当前活动的链接
+        }
+    )
+
+
+
+@login_required
+def commented_posts(request):
+    user = request.user
+    # 获取用户评论过的博客
+    commented_post_ids = Comment.objects.filter(user=user).values_list('post_id', flat=True).distinct()
+    posts = Post.objects.filter(id__in=commented_post_ids)
+
+    return render(
+        request,
+        'users/commented_posts.html',
+        {
+            'posts': posts,
+            'active_menu': 'user-info',  # 设置当前活动的菜单
+            'active_link': 'my_posts',  # 设置当前活动的链接
+        }
+    )
+
+
 
 
 @login_required

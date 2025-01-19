@@ -40,40 +40,7 @@
         <!-- 右侧内容区 -->
         <div class="content-wrapper">
             {% block user_content %}
-                <div class="container">
-                    <!-- 个人信息头部 -->
-                    <div class="profile-header">
-                        <img src="{{ request.user.userprofile.image.url }}" alt="Avatar" class="avatar">
-                        <div>
-                            <div class="nickname">
-                                {% if request.user.userprofile.nickname %}
-                                    <span>{{ request.user.userprofile.nickname }}</span>
-                                {% else %}
-                                    <span>{{ request.user.username }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="description">
-                                {% if  request.user.userprofile.desc %}
-                                    <span>{{ request.user.userprofile.desc }}</span>
-                                {% else %}
-                                    <span>这个人很神秘</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- 博客展示 -->
-                    <ul class="nav nav-tabs">
-                        <li role="presentation" class="active"><a href="{% url 'blog:my_posts' %}">博客</a></li>
-                        <li role="presentation"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
-                        <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
-                        <li role="presentation"><a href="#">评论过</a></li>
-                    </ul>
-
-                    {% block blogs %}
-
-                    {% endblock %}
-                </div>
             {% endblock %}
         </div>
     </div>
