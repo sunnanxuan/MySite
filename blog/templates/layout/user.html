@@ -1,0 +1,225 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}个人信息{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/user.css' %}">
+    <style>
+        /* 通用样式 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+
+        }
+
+        /* 左侧 sidebar 样式 */
+        .sidebar {
+            width: 250px; /* 固定宽度 */
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            height: 600px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd; /* 分隔线 */
+            flex-shrink: 0; /* 防止缩小 */
+            margin: 0;
+
+
+        }
+
+        .sidebar h3 {
+            margin: 10px 0;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .sidebar h3.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            margin: 10px 0;
+            padding: 0;
+            list-style: none;
+            border-top: 1px solid #ddd; /* 菜单分隔线 */
+        }
+
+        .sidebar ul.submenu li a {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul.submenu li a:hover,
+        .sidebar ul.submenu li a.active-link {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* 右侧内容区样式 */
+        .content-wrapper {
+            flex-grow: 1;
+            margin-left: 5px; /* 确保与 sidebar 的宽度一致 */
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd; /* 添加边框 */
+            border-radius: 8px; /* 圆角边框 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            animation: fadeIn 0.3s ease-in-out;
+            width: 500px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nickname {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Tab 样式 */
+        .nav-tabs {
+            display: flex;
+            margin: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .nav-tabs li {
+            list-style: none;
+        }
+
+        .nav-tabs li a {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px 5px 0 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-tabs li a:hover {
+            background-color: #f5f5f5;
+        }
+
+        .nav-tabs li a.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <!-- 个人中心 -->
+            <h3 id="user-info-header" onclick="toggleSubmenu('user-info')"
+                class="{% if active_menu == 'user-info' %}active{% endif %}">个人中心</h3>
+            <ul id="user-info" class="submenu{% if active_menu == 'user-info' %} active{% endif %}">
+                <li><a href="{% url 'blog:my_posts' %}"
+                       class="{% if active_link == 'my_posts' %}active-link{% endif %}">个人主页</a></li>
+                <li><a href="{% url 'users:user_profile' %}"
+                       class="{% if active_link == 'user_profile' %}active-link{% endif %}">个人信息</a></li>
+                <li><a href="{% url 'users:account_safety' %}"
+                       class="{% if active_link == 'account_safety' %}active-link{% endif %}">账号安全</a></li>
+            </ul>
+
+            <!-- 内容管理 -->
+            <h3 id="content-manage-header" onclick="toggleSubmenu('content-manage')"
+                class="{% if active_menu == 'content-manage' %}active{% endif %}">内容管理</h3>
+            <ul id="content-manage" class="submenu{% if active_menu == 'content-manage' %} active{% endif %}">
+                <li><a href="{% url 'blog:create_post' %}"
+                       class="{% if active_link == 'create_post' %}active-link{% endif %}">添加文章</a></li>
+                <li><a href="{% url 'blog:draft_list' %}"
+                       class="{% if active_link == 'draft_list' %}active-link{% endif %}">草稿箱</a></li>
+            </ul>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content-wrapper">
+            {% block user_content %}
+                <div class="container">
+                    <div class="profile-header">
+                        <img src="{{ request.user.userprofile.image.url }}" alt="Avatar" class="avatar">
+                        <div>
+                            <div class="nickname">
+                                {% if request.user.userprofile.nickname %}
+                                    <span>{{ request.user.userprofile.nickname }}</span>
+                                {% else %}
+                                    <span>{{ request.user.username }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="description">
+                                {% if  request.user.userprofile.desc %}
+                                    <span>{{ request.user.userprofile.desc }}</span>
+                                {% else %}
+                                    <span>这个人很神秘</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="{% url 'blog:my_posts' %}">博客</a></li>
+                <li role="presentation"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
+                <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
+                <li role="presentation"><a href="#">评论过</a></li>
+            </ul>
+
+            {% block blogs %}
+
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('active');
+        }
+    </script>
+{% endblock %}

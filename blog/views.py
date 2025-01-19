@@ -8,7 +8,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render
+
 
 
 def index(request):
@@ -91,25 +91,49 @@ def create_post(request):
             return redirect('blog:index')
     else:
         form = PostForm()
-    return render(request, 'user.html', {'page_template': 'create_post.html', 'form': form, 'active_menu': 'content-manage', 'active_link': 'create_post'})
+    return render(request, 'create_post.html', { 'form': form, 'active_menu': 'content-manage', 'active_link': 'create_post'})
 
 
 
 
-@login_required  # 确保只有登录用户才能访问该页面
+@login_required
 def my_posts(request):
     # 获取当前用户的博客
     posts = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
-    return render(request, 'user.html', {'page_template': 'my_posts.html', 'posts': posts, 'active_menu': 'content-manage', 'active_link': 'my_posts'})
+    return render(
+        request,
+        'my_posts.html',
+        {
+            'posts': posts,
+            'active_menu': 'user-info',  # 设置当前活动的菜单
+            'active_link': 'my_posts',  # 设置当前活动的链接
+        }
+    )
+
+@login_required
+def favorited_posts(request):
+    user = request.user
+    posts = Post.objects.filter(favorited_users=user)
+    return render(request, 'layout/user.html',
+                  {'page_template': 'users/favorited_posts.html', 'posts': posts, 'active_menu': 'user-info','active_link': 'favorited_posts'})
 
 
+
+
+@login_required
+def liked_posts(request):
+    user = request.user
+    posts = Post.objects.filter(liked_users=user)
+    return render(request, 'layout/user.html',
+                  {'page_template': 'users/liked_posts', 'posts': posts, 'active_menu': 'user-info',
+                   'active_link': 'liked_posts'})
 
 
 @login_required
 def draft_list(request):
     # 获取当前用户的草稿列表
     drafts = Post.objects.filter(owner=request.user, status=Post.DRAFT).order_by('-add_date')
-    return render(request, 'user.html', {'page_template': 'draft_list.html', 'drafts': drafts, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
+    return render(request, 'draft_list.html', { 'drafts': drafts, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
 
 
 
@@ -131,7 +155,7 @@ def edit_draft(request, post_id):
     else:
         form = PostForm(instance=draft)
     #return render(request, 'edit_draft.html', {'form': form, 'draft': draft})
-    return render(request, 'user.html', {'page_template': 'edit_draft.html', 'form': form, 'draft': draft, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
+    return render(request, 'edit_draft.html', { 'form': form, 'draft': draft, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
 
 
 
@@ -224,3 +248,8 @@ def favorite_post(request, post_id):
         post.favorited_users.add(request.user)  # 添加收藏
         favorited = True
     return JsonResponse({"favorited": favorited, "total_favorites": post.total_favorites()})
+
+
+
+
+

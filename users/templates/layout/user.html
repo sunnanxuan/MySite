@@ -1,0 +1,89 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}个人信息{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/user.css' %}">
+    <style>
+        /* 您现有的 CSS 代码 */
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <!-- 个人中心 -->
+            <h3 id="user-info-header" onclick="toggleSubmenu('user-info')"
+                class="{% if active_menu == 'user-info' %}active{% endif %}">个人中心</h3>
+            <ul id="user-info" class="submenu{% if active_menu == 'user-info' %} active{% endif %}">
+                <li><a href="{% url 'blog:my_posts' %}"
+                       class="{% if active_link == 'my_posts' %}active-link{% endif %}">个人主页</a></li>
+                <li><a href="{% url 'users:user_profile' %}"
+                       class="{% if active_link == 'user_profile' %}active-link{% endif %}">个人信息</a></li>
+                <li><a href="{% url 'users:account_safety' %}"
+                       class="{% if active_link == 'account_safety' %}active-link{% endif %}">账号安全</a></li>
+            </ul>
+
+            <!-- 内容管理 -->
+            <h3 id="content-manage-header" onclick="toggleSubmenu('content-manage')"
+                class="{% if active_menu == 'content-manage' %}active{% endif %}">内容管理</h3>
+            <ul id="content-manage" class="submenu{% if active_menu == 'content-manage' %} active{% endif %}">
+                <li><a href="{% url 'blog:create_post' %}"
+                       class="{% if active_link == 'create_post' %}active-link{% endif %}">添加文章</a></li>
+                <li><a href="{% url 'blog:draft_list' %}"
+                       class="{% if active_link == 'draft_list' %}active-link{% endif %}">草稿箱</a></li>
+            </ul>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content-wrapper">
+            {% block user_content %}
+                <div class="container">
+                    <!-- 个人信息头部 -->
+                    <div class="profile-header">
+                        <img src="{{ request.user.userprofile.image.url }}" alt="Avatar" class="avatar">
+                        <div>
+                            <div class="nickname">
+                                {% if request.user.userprofile.nickname %}
+                                    <span>{{ request.user.userprofile.nickname }}</span>
+                                {% else %}
+                                    <span>{{ request.user.username }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="description">
+                                {% if  request.user.userprofile.desc %}
+                                    <span>{{ request.user.userprofile.desc }}</span>
+                                {% else %}
+                                    <span>这个人很神秘</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 博客展示 -->
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href="{% url 'blog:my_posts' %}">博客</a></li>
+                        <li role="presentation"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
+                        <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
+                        <li role="presentation"><a href="#">评论过</a></li>
+                    </ul>
+
+                    {% block blogs %}
+
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('active');
+        }
+    </script>
+{% endblock %}

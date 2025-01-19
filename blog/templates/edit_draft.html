@@ -1,7 +1,6 @@
+{% extends 'layout/user.html' %}
 
-{% block title %}编辑草稿{% endblock %}
-
-{% block content %}
+{% block user_content %}
     <h1>编辑草稿：{{ draft.title }}</h1>
     <form method="post">
         {% csrf_token %}

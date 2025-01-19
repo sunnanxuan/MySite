@@ -1,4 +1,6 @@
+{% extends 'layout/user.html' %}
 
+{% block user_content %}
 <div class="content">
     <div class="header">
         <img src="{{ request.user.userprofile.image.url }}" alt="Avatar" class="avatar">
@@ -25,3 +27,4 @@
     <h3>个人简介</h3>
     <p>{{ request.user.userprofile.desc }}</p>
 </div>
+{% endblock %}
