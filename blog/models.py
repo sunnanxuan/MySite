@@ -150,17 +150,17 @@ class Sidebar(models.Model):
             context = {
 
             }
-            return render_to_string('search.html', context=context)
+            return render_to_string('sidebar/search.html', context=context)
         elif self.display_type == 2:
             context = {
 
             }
-            return render_to_string('new_post.html', context=context)
+            return render_to_string('sidebar/new_post.html', context=context)
         elif self.display_type == 3:
             context = {
 
             }
-            return render_to_string('hot_post.html', context=context)
+            return render_to_string('sidebar/hot_post.html', context=context)
         elif self.display_type == 4:
             context = {
 
@@ -170,7 +170,7 @@ class Sidebar(models.Model):
             context = {
 
             }
-            return render_to_string('archives.html', context=context)
+            return render_to_string('sidebar/archives.html', context=context)
         elif self.display_type == 6:
             return self.content
 

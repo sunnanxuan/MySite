@@ -237,7 +237,7 @@ def archives(request, year, month):
         posts = paginator.page(paginator.num_pages)
 
     context = {'posts': posts, 'year': year, 'month': month}
-    return render(request, 'archives_list.html', context)
+    return render(request, 'sidebar/archives_list.html', context)
 
 
 

@@ -1,7 +1,6 @@
 {% extends 'layout/user.html' %}
 
 {% block user_content %}
-    <h1>编辑草稿：{{ draft.title }}</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
@@ -11,9 +10,10 @@
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
                 删除草稿
             </button>
+            <button type="button" name="return" class="btn btn-secondary"><a href="{% url 'blog:draft_list' %}" >取消</a></button>
         </div>
     </form>
-    <a href="{% url 'blog:draft_list' %}" class="btn btn-light mt-3">返回草稿箱</a>
+
 
     <!-- 删除确认模态框 -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
@@ -39,3 +39,4 @@
         </div>
     </div>
 {% endblock %}
+
