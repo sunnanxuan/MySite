@@ -8,6 +8,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.models import User
 
 
 
@@ -284,5 +285,11 @@ def favorite_post(request, post_id):
 
 
 
+
+def author_profile(request, author_id):
+    author = get_object_or_404(User, id=author_id)
+    posts = Post.objects.filter(owner=author, status='published').order_by('-pub_date')
+    print(author,posts)
+    return render(request, 'author_profile.html', {'author': author, 'posts': posts})
 
 

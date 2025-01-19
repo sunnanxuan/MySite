@@ -225,7 +225,7 @@
     <article>
         <header>
             <h1>{{ post.title }}</h1>
-            <p>作者：<strong>{{ post.owner.username }}</strong>
+            <p>作者：<strong><a href="{% url 'blog:author_profile' post.owner.id %}">{{ post.owner.username }}</a></strong>
                 | 发布日期：<strong>{{ post.add_date|date:"Y-m-d H:i" }}</strong>
                 | 浏览量：<strong>{{ post.pv }}</strong>
             </p>

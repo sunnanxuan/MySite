@@ -30,4 +30,6 @@ urlpatterns = [
     path('post/<int:post_id>/like/', views.like_post, name='like_post'),
     path('post/<int:post_id>/favorite/', views.favorite_post, name='favorite_post'),
 
+    path('author/<int:author_id>/', views.author_profile, name='author_profile'),
+
 ]
