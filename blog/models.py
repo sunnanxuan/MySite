@@ -193,3 +193,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} 对《{self.post.title}》的评论"
+
+
+
+class PostImage(models.Model):
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name="images", verbose_name="所属文章")
+    image = models.ImageField(upload_to='post_images/', verbose_name="图片")
+
+    class Meta:
+        verbose_name = "文章图片"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f"{self.post.title} 的图片"

@@ -217,6 +217,25 @@
             background-color: #0056b3;
         }
 
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .image-item {
+            width: 100%;
+            max-width: 300px; /* 控制每个图片项目的最大宽度 */
+        }
+
+        @media (min-width: 768px) {
+            .image-item {
+                width: 48%; /* 在大屏设备上，图片容器并排显示 */
+            }
+        }
+
+
     </style>
 {% endblock %}
 
@@ -225,9 +244,11 @@
     <article>
         <header>
             <h1>{{ post.title }}</h1>
-            <p>作者：<strong><a href="{% url 'blog:author_profile' post.owner.id %}">{{ post.owner.username }}</a></strong>
-                | 发布日期：<strong>{{ post.add_date|date:"Y-m-d H:i" }}</strong>
-                | 浏览量：<strong>{{ post.pv }}</strong>
+            <p>
+                作者：<strong><a
+                    href="{% url 'blog:author_profile' post.owner.id %}">{{ post.owner.username }}</a></strong> |
+                发布日期：<strong>{{ post.add_date|date:"Y-m-d H:i" }}</strong> |
+                浏览量：<strong>{{ post.pv }}</strong>
             </p>
             <p>分类：<a href="{% url 'blog:category_detail' post.category.id %}">{{ post.category.name }}</a></p>
             <p>标签：
@@ -237,6 +258,24 @@
                 {% endfor %}
             </p>
         </header>
+
+        <!-- 展示文章关联的图片 -->
+        {% if images %}
+            <div class="post-images">
+                <div class="image-gallery">
+                    {% for image in images %}
+                        <div class="image-item">
+                            <!-- 包裹图片的链接，点击时查看大图 -->
+                            <a href="{{ image.image.url }}" target="_blank">
+                                <img src="{{ image.image.url }}" alt="文章图片" class="img-fluid"
+                                     style="max-width: 300px; height: auto;">
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
 
         <section>
             <p>{{ post.content|safe }}</p>
@@ -281,6 +320,7 @@
         </nav>
     </article>
 
+    <!-- 评论区 -->
     <div class="comments-section">
         <h2>评论区</h2>
         {% if post.comments.exists %}
@@ -317,7 +357,6 @@
 
 {% block js %}
     <script>
-
         $(function () {
             bindClickLike();
             bindClickFavorite();
@@ -328,7 +367,6 @@
                 event.preventDefault();
 
                 const postId = $(this).data('post-id');
-
                 const formData = new FormData();
                 formData.append('post_id', postId);
 
@@ -363,7 +401,6 @@
                 event.preventDefault();
 
                 const postId = $(this).data('post-id');
-
                 const formData = new FormData();
                 formData.append('post_id', postId);
 
@@ -392,6 +429,5 @@
                 });
             });
         }
-
     </script>
 {% endblock %}

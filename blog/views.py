@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import Category, Post,Comment
-from .forms import PostForm
+from .models import Category, Post,Comment,PostImage
+from .forms import PostForm, PostImageFormSet
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse
@@ -36,13 +36,18 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     prev_post = Post.objects.filter(id__lt=post_id).order_by('-id').first()
     next_post = Post.objects.filter(id__gt=post_id).order_by('id').first()
-    Post.objects.filter(id=post_id).update(pv=F('pv')+1) #此方法有bug，暂时这样仅做此路
+    Post.objects.filter(id=post_id).update(pv=F('pv') + 1)  # 增加浏览量
     previous_url = request.META.get('HTTP_REFERER', None)
+
+    # 获取文章关联的图片
+    images = post.images.all()
 
     return render(request, 'post_detail.html', {
         'post': post,
         'prev_post': prev_post,
         'next_post': next_post,
+        'images': images,  # 将图片传递到模板
+        'previous_url': previous_url,
     })
 
 
@@ -81,18 +86,41 @@ def category_detail(request, category_id):
 def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST)
-        if form.is_valid():
+        formset = PostImageFormSet(request.POST, request.FILES, queryset=PostImage.objects.none())
+
+        if form.is_valid() and formset.is_valid():
+            # 保存文章
             post = form.save(commit=False)
             post.owner = request.user
+
             if 'save_draft' in request.POST:
                 post.status = Post.DRAFT
             else:
                 post.status = Post.PUBLISHED
+
             post.save()
+
+            # 保存图片
+            for image_form in formset.cleaned_data:
+                if image_form:
+                    PostImage.objects.create(
+                        post=post,
+                        image=image_form['image'],
+                    )
+
             return redirect('blog:index')
     else:
         form = PostForm()
-    return render(request, 'create_post.html', { 'form': form, 'active_menu': 'content-manage', 'active_link': 'create_post'})
+        formset = PostImageFormSet(queryset=PostImage.objects.none())
+
+    return render(request, 'create_post.html', {
+        'form': form,
+        'formset': formset,
+        'active_menu': 'content-manage',
+        'active_link': 'create_post'
+    })
+
+
 
 
 
@@ -289,7 +317,6 @@ def favorite_post(request, post_id):
 def author_profile(request, author_id):
     author = get_object_or_404(User, id=author_id)
     posts = Post.objects.filter(owner=author, status='published').order_by('-pub_date')
-    print(author,posts)
     return render(request, 'author_profile.html', {'author': author, 'posts': posts})
 
 
