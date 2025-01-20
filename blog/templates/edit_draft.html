@@ -190,6 +190,12 @@
                 formData.append('delete_image', deleteImageIds);  // 确保删除的图片 ID 被添加到 FormData 中
             }
 
+             const submitButton = document.querySelector('button[type="submit"]:focus');  // 获取被点击的按钮
+            if (submitButton) {
+                formData.append(submitButton.name, submitButton.value || submitButton.textContent.trim());
+            }
+
+
             // 提交表单数据
             fetch(this.action, {
                 method: 'POST',

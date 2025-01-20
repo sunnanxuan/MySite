@@ -214,7 +214,7 @@ def edit_draft(request, post_id):
         form = PostForm(request.POST, instance=draft)
         image_form = PostImageForm(request.POST, request.FILES)
 
-        print(request.FILES)
+        print(request.POST)
 
         if form.is_valid():
             # 保存文章内容
