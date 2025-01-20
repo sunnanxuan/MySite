@@ -83,6 +83,16 @@ def category_detail(request, category_id):
 
 
 
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.PUBLISHED)
+    if request.method == 'POST':
+        post.delete()
+        messages.success(request, "文章已成功删除。")
+        return redirect('blog:my_posts')
+    return HttpResponseForbidden("不允许的操作")
+
+
+
 @login_required
 def create_post(request):
     if request.method == 'POST':

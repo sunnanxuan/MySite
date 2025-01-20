@@ -21,6 +21,7 @@ urlpatterns = [
 
     path('drafts/', views.draft_list, name='draft_list'),  # 草稿箱
     path('drafts/edit/<int:post_id>/', views.edit_draft, name='edit_draft'),
+    path('delete_image/<int:image_id>/', views.delete_image, name='delete_image'),
     path('drafts/delete/<int:post_id>/', views.delete_draft, name='delete_draft'),
 
     path('search/', views.search, name='search'),
@@ -32,6 +33,8 @@ urlpatterns = [
 
     path('author/<int:author_id>/', views.author_profile, name='author_profile'),
 
-    path('delete_image/<int:image_id>/', views.delete_image, name='delete_image'),
+    path('my-posts/delete/<int:post_id>/', views.delete_post, name='delete_post'),
+
+
 
 ]
