@@ -18,7 +18,7 @@
                     <li>
                         <a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
                         <!-- 添加编辑和删除操作 -->
-                        <a href="#" class="btn btn-primary btn-sm ml-2">编辑</a>
+                        <a href="{% url 'blog:edit_post' post.id %}" class="btn btn-primary btn-sm ml-2">编辑</a>
                         <button type="button" class="btn btn-danger btn-sm ml-2" data-toggle="modal" data-target="#deleteModal-{{ post.id }}">删除</button>
 
                         <!-- 删除确认模态框 -->

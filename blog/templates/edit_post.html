@@ -1,0 +1,174 @@
+{% extends 'layout/user.html' %}
+
+{% block user_content %}
+    <form method="post" enctype="multipart/form-data" id="edit-post-form" action="{% url 'blog:edit_post' post.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <!-- 图片上传 -->
+        <legend>上传图片</legend>
+        <div>
+            <input type="file" name="images" class="form-control post-img" id="image-upload" multiple>  <!-- 允许多选文件 -->
+        </div>
+
+        <!-- 显示已选图片的预览小图 -->
+        <div id="image-previews" class="mt-3">
+            {% for image in post.images.all %}
+                <div class="image-preview" data-image-id="{{ image.id }}">
+                    <img src="{{ image.image.url }}" alt="{{ image.image.name }}" title="点击删除此图片">
+                    <button type="button" class="delete-btn" onclick="deleteUploadedImage(this, {{ image.id }})">删除</button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="form-group mt-4">
+            <button type="submit" name="publish" class="btn btn-success">发布</button>  <!-- 确保按钮 name 为 "publish" -->
+            <a href="{% url 'blog:my_posts' %}" class="btn btn-secondary">取消</a>
+        </div>
+
+        <!-- 隐藏删除的图片 ID 字段 -->
+        <input type="hidden" id="delete-image-ids" name="delete_image">
+
+    </form>
+
+
+    <style>
+        .post-img {
+            margin-bottom: 10px;
+        }
+
+        #image-previews {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #image-previews img {
+            max-width: 50px;
+            max-height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .image-preview {
+            position: relative;
+        }
+
+        .image-preview img {
+            border: 2px solid transparent;
+        }
+
+        .image-preview.selected img {
+            border-color: #007bff;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: rgba(255, 0, 0, 0.5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .image-preview:hover .delete-btn {
+            display: block;
+        }
+    </style>
+
+    <script>
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreviews = document.getElementById('image-previews');
+        let selectedFiles = [];
+        const deleteImageIdsInput = document.getElementById('delete-image-ids');
+
+        // 处理文件选择
+        imageUpload.addEventListener('change', () => {
+            Array.from(imageUpload.files).forEach(file => {
+                selectedFiles.push(file);
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.classList.add('image-preview');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.title = "点击删除此图片";
+                    previewDiv.appendChild(img);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.type = 'button';
+                    deleteBtn.classList.add('delete-btn');
+                    deleteBtn.textContent = 'X';
+                    deleteBtn.onclick = () => deleteImage(deleteBtn);
+                    previewDiv.appendChild(deleteBtn);
+
+                    imagePreviews.appendChild(previewDiv);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function deleteUploadedImage(button, imageId) {
+            const previewDiv = button.closest('.image-preview');
+            previewDiv.remove();
+
+            const currentIds = deleteImageIdsInput.value ? deleteImageIdsInput.value.split(',') : [];
+            if (!currentIds.includes(imageId.toString())) {
+                currentIds.push(imageId.toString());
+            }
+            deleteImageIdsInput.value = currentIds.join(',');
+        }
+
+        function deleteImage(button) {
+            const previewDiv = button.closest('.image-preview');
+            previewDiv.remove();
+
+            const index = Array.from(imagePreviews.children).indexOf(previewDiv);
+            selectedFiles.splice(index, 1);
+        }
+
+        document.getElementById('edit-post-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            selectedFiles = [];
+            selectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            const deleteImageIds = deleteImageIdsInput.value;
+            if (deleteImageIds) {
+                formData.append('delete_image', deleteImageIds);
+            }
+
+            const submitButton = document.querySelector('button[type="submit"]:focus');
+            if (submitButton) {
+                formData.append(submitButton.name, submitButton.value || submitButton.textContent.trim());
+            }
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "{% url 'blog:my_posts' %}";
+                    } else {
+                        alert('上传失败了，请重试');
+                    }
+                })
+                .catch(error => alert('上传错误，请重试'));
+        });
+    </script>
+
+{% endblock %}

@@ -132,6 +132,59 @@ def create_post(request):
     return render(request, 'create_post.html', {'post_form': post_form, 'image_form': image_form})
 
 
+
+
+@login_required
+def edit_post(request, post_id):
+    # 获取已发布的文章
+    post = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.PUBLISHED)
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        image_form = PostImageForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            # 保存文章内容
+            post = form.save(commit=False)
+            post.owner = request.user
+
+            # 检查是否点击了发布按钮
+            if 'publish' in request.POST:
+                post.status = Post.PUBLISHED  # 保证状态为发布
+
+            post.save()
+
+            # 删除图片操作
+            if 'delete_image' in request.POST:
+                delete_image_ids = request.POST.get('delete_image', '').split(',')
+                for image_id in filter(None, delete_image_ids):
+                    image = get_object_or_404(PostImage, id=image_id)
+                    image.delete()
+
+            # 保存新的图片文件
+            if 'images' in request.FILES:
+                images = request.FILES.getlist('images')
+                for image in images:
+                    PostImage.objects.create(post=post, image=image)
+
+            # 返回成功响应
+            return JsonResponse({'success': True})
+
+    else:
+        form = PostForm(instance=post)
+        image_form = PostImageForm()
+
+    return render(request, 'edit_post.html', {
+        'form': form,
+        'post': post,
+        'image_form': image_form,
+        'active_menu': 'content-manage',
+        'active_link': 'published_posts'
+    })
+
+
+
+
 def delete_image(request, image_id):
     if request.method == 'DELETE':
         image = get_object_or_404(PostImage, id=image_id)
