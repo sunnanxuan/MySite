@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import Category, Post,Comment,PostImage
-from .forms import PostForm, PostImageFormSet
+from .forms import PostForm, PostImageForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse
@@ -9,7 +9,8 @@ from django.contrib import messages
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
-
+from django.urls import reverse
+from django.forms import inlineformset_factory
 
 
 def index(request):
@@ -81,48 +82,32 @@ def category_detail(request, category_id):
     return render(request, 'category_detail.html', {'category': category, 'posts': posts})
 
 
-
 @login_required
 def create_post(request):
     if request.method == 'POST':
-        form = PostForm(request.POST)
-        formset = PostImageFormSet(request.POST, request.FILES, queryset=PostImage.objects.none())
+        post_form = PostForm(request.POST)
+        image_form = PostImageForm(request.POST, request.FILES)
 
-        if form.is_valid() and formset.is_valid():
-            # 保存文章
-            post = form.save(commit=False)
+        if post_form.is_valid():
+            # 保存文章内容
+            post = post_form.save(commit=False)
             post.owner = request.user
-
-            if 'save_draft' in request.POST:
-                post.status = Post.DRAFT
-            else:
-                post.status = Post.PUBLISHED
-
+            post.status = Post.DRAFT if 'save_draft' in request.POST else Post.PUBLISHED
             post.save()
 
-            # 保存图片
-            for image_form in formset.cleaned_data:
-                if image_form:
-                    PostImage.objects.create(
-                        post=post,
-                        image=image_form['image'],
-                    )
+            # 如果有图片上传，保存图片
+            if 'image' in request.FILES:  # 如果上传了图片
+                images = request.FILES.getlist('image')  # 获取所有上传的图片文件
+                for image in images:
+                    PostImage.objects.create(post=post, image=image)
 
-            return redirect('blog:index')
+            return redirect('blog:my_posts')
+
     else:
-        form = PostForm()
-        formset = PostImageFormSet(queryset=PostImage.objects.none())
+        post_form = PostForm()
+        image_form = PostImageForm()
 
-    return render(request, 'create_post.html', {
-        'form': form,
-        'formset': formset,
-        'active_menu': 'content-manage',
-        'active_link': 'create_post'
-    })
-
-
-
-
+    return render(request, 'create_post.html', {'post_form': post_form, 'image_form': image_form})
 
 
 @login_required
@@ -216,7 +201,6 @@ def edit_draft(request, post_id):
             return redirect('blog:draft_list')  # 跳转到草稿箱页面
     else:
         form = PostForm(instance=draft)
-    #return render(request, 'edit_draft.html', {'form': form, 'draft': draft})
     return render(request, 'edit_draft.html', { 'form': form, 'draft': draft, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
 
 

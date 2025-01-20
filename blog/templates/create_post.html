@@ -1,66 +1,31 @@
 {% extends 'layout/user.html' %}
 
 {% block user_content %}
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="post-form">
         {% csrf_token %}
 
-        <!-- 渲染文章内容的表单 -->
-        {{ form.as_p }}
-
-        <!-- 渲染图片上传区域 -->
+        <!-- 渲染文章内容表单 -->
         <fieldset>
-            <legend>上传图片</legend>
-            <div id="image-upload-container">
-                {{ formset.management_form }}
-                {% for form in formset %}
-                    <div class="form-group image-upload">
-                        {{ form.image.label_tag }}
-                        {{ form.image }}
-                        <button type="button" class="btn btn-danger remove-image">删除</button>
-                    </div>
-                {% endfor %}
+            {{ post_form.as_p }}
+        </fieldset>
+
+        <!-- 图片上传表单 -->
+        <fieldset>
+            <div>
+                <input type="file" name="image" class="form-control post-img" multiple>  <!-- 允许多选文件 -->
             </div>
-            <button type="button" id="add-image" class="btn btn-secondary">添加图片</button>
         </fieldset>
 
         <!-- 操作按钮 -->
         <button type="submit" name="publish" class="btn btn-primary">发布</button>
         <button type="submit" name="save_draft" class="btn btn-secondary">保存为草稿</button>
-        <a href="{% url 'users:user_home' %}" class="btn btn-light">取消</a>
+        <button type="submit" name="save_draft" class="btn btn-secondary"> <a href="{% url 'blog:my_posts' %}">取消</a></button>
+
     </form>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const addImageBtn = document.getElementById('add-image');
-            const container = document.getElementById('image-upload-container');
-            const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
-            let formCount = parseInt(totalFormsInput.value, 10);
-
-            // 添加图片上传字段
-            addImageBtn.addEventListener('click', function () {
-                const newForm = container.querySelector('.image-upload').cloneNode(true);
-                const regex = new RegExp(`form-(\d+)-`, 'g');
-                newForm.innerHTML = newForm.innerHTML.replace(regex, `form-${formCount}-`);
-                container.appendChild(newForm);
-
-                // 清空新表单的输入值
-                newForm.querySelector('input[type="file"]').value = '';
-
-                formCount++;
-                totalFormsInput.value = formCount;
-            });
-
-            // 删除图片上传字段
-            container.addEventListener('click', function (e) {
-                if (e.target.classList.contains('remove-image')) {
-                    const formGroup = e.target.closest('.image-upload');
-                    formGroup.remove();
-
-                    // 更新总表单数
-                    formCount--;
-                    totalFormsInput.value = formCount;
-                }
-            });
-        });
-    </script>
+    <style>
+    .post-img{
+        margin-bottom: 10px;
+    }
+    </style>
 {% endblock %}

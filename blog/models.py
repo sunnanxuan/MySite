@@ -195,10 +195,19 @@ class Comment(models.Model):
         return f"{self.user.username} 对《{self.post.title}》的评论"
 
 
+import os
+
+def post_image_upload_to(instance, filename):
+    # 获取当前 Post 对象的 id
+    post_id = instance.post.id
+    # 生成图片的文件夹路径，并保留原始文件名
+    return os.path.join(f'post_images/{post_id}/', filename)
+
+
 
 class PostImage(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name="images", verbose_name="所属文章")
-    image = models.ImageField(upload_to='post_images/', verbose_name="图片")
+    image = models.ImageField(upload_to=post_image_upload_to, verbose_name="图片")
 
     class Meta:
         verbose_name = "文章图片"
