@@ -32,4 +32,6 @@ urlpatterns = [
 
     path('author/<int:author_id>/', views.author_profile, name='author_profile'),
 
+    path('delete_image/<int:image_id>/', views.delete_image, name='delete_image'),
+
 ]

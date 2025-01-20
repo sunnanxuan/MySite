@@ -82,32 +82,52 @@ def category_detail(request, category_id):
     return render(request, 'category_detail.html', {'category': category, 'posts': posts})
 
 
+
 @login_required
 def create_post(request):
     if request.method == 'POST':
         post_form = PostForm(request.POST)
         image_form = PostImageForm(request.POST, request.FILES)
 
+        # 检查文章表单是否有效
         if post_form.is_valid():
             # 保存文章内容
             post = post_form.save(commit=False)
             post.owner = request.user
-            post.status = Post.DRAFT if 'save_draft' in request.POST else Post.PUBLISHED
+
+
+            # 检查是否点击了发布按钮
+            if 'publish' in request.POST:
+                post.status = Post.PUBLISHED  # 设置文章状态为发布
+            else:
+                post.status = Post.DRAFT  # 如果没有点击发布按钮，设置为草稿
+
             post.save()
 
-            # 如果有图片上传，保存图片
-            if 'image' in request.FILES:  # 如果上传了图片
-                images = request.FILES.getlist('image')  # 获取所有上传的图片文件
+            # 获取上传的所有图片文件
+            if 'images' in request.FILES:
+                images = request.FILES.getlist('images')  # 获取所有上传的图片文件
+
+                # 保存每张图片到数据库
                 for image in images:
                     PostImage.objects.create(post=post, image=image)
 
-            return redirect('blog:my_posts')
+            # 返回成功响应
+            return JsonResponse({'success': True})
 
     else:
         post_form = PostForm()
         image_form = PostImageForm()
 
     return render(request, 'create_post.html', {'post_form': post_form, 'image_form': image_form})
+
+
+def delete_image(request, image_id):
+    if request.method == 'DELETE':
+        image = get_object_or_404(PostImage, id=image_id)
+        image.delete()
+        return JsonResponse({'status': 'success'})
+
 
 
 @login_required
@@ -184,29 +204,63 @@ def draft_list(request):
 
 
 
+
 @login_required
 def edit_draft(request, post_id):
     # 获取当前用户的草稿
     draft = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.DRAFT)
+
     if request.method == 'POST':
         form = PostForm(request.POST, instance=draft)
+        image_form = PostImageForm(request.POST, request.FILES)
+
+        print(request.POST)
+
         if form.is_valid():
-            # 根据提交按钮的值决定操作
-            if 'publish' in request.POST:  # 点击发布按钮
-                draft.status = Post.PUBLISHED
-                draft.pub_date = timezone.now()
-            elif 'save_draft' in request.POST:  # 点击保存草稿按钮
-                draft.status = Post.DRAFT
-            draft.save()
-            return redirect('blog:draft_list')  # 跳转到草稿箱页面
+            # 保存文章内容
+            post = form.save(commit=False)
+            post.owner = request.user
+
+            # 检查是否点击了发布按钮
+            if 'publish' in request.POST:
+                post.status = Post.PUBLISHED  # 设置文章状态为发布
+
+            post.save()
+
+
+            if 'delete_image' in request.POST:
+                delete_image_ids = request.POST.get('delete_image', '').split(',')
+                for image_id in filter(None, delete_image_ids):
+                    image = get_object_or_404(PostImage, id=image_id)
+                    image.delete()
+
+            # 获取上传的所有图片文件
+            if 'images' in request.FILES:
+                images = request.FILES.getlist('images')  # 获取所有上传的图片文件
+
+                # 保存每张图片到数据库
+                for image in images:
+                    PostImage.objects.create(post=post, image=image)
+
+            # 返回成功响应
+            return JsonResponse({'success': True})
+
     else:
         form = PostForm(instance=draft)
-    return render(request, 'edit_draft.html', { 'form': form, 'draft': draft, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
+        image_form = PostImageForm()
+
+    return render(request, 'edit_draft.html', {
+        'form': form,
+        'draft': draft,
+        'image_form': image_form,
+        'active_menu': 'content-manage',
+        'active_link': 'draft_list'
+    })
 
 
 
 
-@login_required
+
 def delete_draft(request, post_id):
     draft = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.DRAFT)
     if request.method == 'POST':
