@@ -179,6 +179,7 @@
 
             const formData = new FormData(this);
             // 将所有选择的文件添加到 FormData 中
+            selectedFiles = [];
             selectedFiles.forEach(file => {
                 formData.append('images', file);
             });
