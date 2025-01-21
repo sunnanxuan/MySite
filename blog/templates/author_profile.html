@@ -28,9 +28,9 @@
     <!-- 文章列表部分 -->
     <div class="author-posts card shadow-sm p-3 mb-4 bg-white rounded">
         <h3 class="mb-3">文章列表</h3>
-        {% if posts %}
+        {% if post_list %}
             <ul class="list-group">
-                {% for post in posts %}
+                {% for post in post_list %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a href="{% url 'blog:post_detail' post.id %}" class="post-title">
                             {{ post.title }}
@@ -44,6 +44,47 @@
         {% endif %}
     </div>
 
+    <!-- 分页控件 -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if post_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ post_list.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+            {% endif %}
+
+            {% for num in post_list.paginator.page_range %}
+                {% if post_list.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }} <span class="sr-only">(current)</span></span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if post_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ post_list.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
     <!-- 返回按钮 -->
     <div class="text-center">
         <a href="javascript:history.back();" class="btn btn-secondary">返回上一页</a>
@@ -54,35 +95,38 @@
 {% block footer %}
 {% endblock %}
 
-
 <style>
     .author-avatar {
-    border: 2px solid #ddd;
-}
+        border: 2px solid #ddd;
+    }
 
-.author-name {
-    font-size: 1.75rem;
-    font-weight: bold;
-}
+    .author-name {
+        font-size: 1.75rem;
+        font-weight: bold;
+    }
 
-.author-signature {
-    font-style: italic;
-    color: #6c757d;
-}
+    .author-signature {
+        font-style: italic;
+        color: #6c757d;
+    }
 
-.author-bio {
-    font-size: 1rem;
-    color: #495057;
-}
+    .author-bio {
+        font-size: 1rem;
+        color: #495057;
+    }
 
-.post-title {
-    font-weight: 500;
-    text-decoration: none;
-    color: #007bff;
-}
+    .post-title {
+        font-weight: 500;
+        text-decoration: none;
+        color: #007bff;
+    }
 
-.post-title:hover {
-    text-decoration: underline;
-}
+    .post-title:hover {
+        text-decoration: underline;
+    }
 
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
 </style>

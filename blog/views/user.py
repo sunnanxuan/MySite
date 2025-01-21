@@ -70,10 +70,13 @@ def liked_posts(request):
 
 
 
-
 def author_profile(request, author_id):
     author = get_object_or_404(User, id=author_id)
     posts = Post.objects.filter(owner=author, status='published').order_by('-pub_date')
-    return render(request, 'author_profile.html', {'author': author, 'posts': posts})
 
+    # 添加分页
+    paginator = Paginator(posts, 10)  # 每页显示 10 篇文章
+    page_number = request.GET.get('page')
+    post_list = paginator.get_page(page_number)
 
+    return render(request, 'author_profile.html', {'author': author, 'post_list': post_list})
