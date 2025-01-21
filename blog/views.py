@@ -9,8 +9,7 @@ from django.contrib import messages
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
-from django.urls import reverse
-from django.forms import inlineformset_factory
+
 
 
 def index(request):
@@ -195,17 +194,31 @@ def delete_image(request, image_id):
 
 @login_required
 def my_posts(request):
-    # 获取当前用户的博客
-    posts = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
+    post_list = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
+
+    # 分页逻辑
+    paginator = Paginator(post_list, 10)  # 每页显示5篇文章
+    page = request.GET.get('page', 1)  # 获取当前页码
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        # 如果页码不是整数，返回第一页
+        posts = paginator.page(1)
+    except EmptyPage:
+        # 如果页码超出范围，返回最后一页
+        posts = paginator.page(paginator.num_pages)
+
     return render(
         request,
         'users/my_posts.html',
         {
-            'posts': posts,
+            'posts': posts,  # 将分页后的文章传递到模板
             'active_menu': 'user-info',  # 设置当前活动的菜单
             'active_link': 'my_posts',  # 设置当前活动的链接
         }
     )
+
+
 
 @login_required
 def favorited_posts(request):
