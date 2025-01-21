@@ -1,35 +1,14 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import Category, Post,Comment,PostImage
-from .forms import PostForm, PostImageForm
+from ..models import Category, Post,Comment,PostImage
+from ..forms import PostForm, PostImageForm
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.db.models import Q, F
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.models import User
 
 
 
-def index(request):
-    # 获取已发布的文章
-    post_list = Post.objects.filter(status=Post.PUBLISHED)
-
-    # 设置每页显示文章数
-    paginator = Paginator(post_list, 5)  # 每页 5 篇文章
-    page = request.GET.get('page')  # 获取当前页码
-
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        posts = paginator.page(1)  # 如果页码不是整数，返回第一页
-    except EmptyPage:
-        posts = paginator.page(paginator.num_pages)  # 如果超出页码范围，返回最后一页
-
-    # 渲染模板并传递分页后的文章列表
-    context = {'post_list': posts}
-    return render(request, 'index.html', context)
 
 
 def post_detail(request, post_id):
@@ -49,46 +28,6 @@ def post_detail(request, post_id):
         'images': images,  # 将图片传递到模板
         'previous_url': previous_url,
     })
-
-
-
-
-
-
-# 展示所有分类
-def category_list(request):
-    categories = Category.objects.all()
-    return render(request, 'category_list.html', {'categories': categories})
-
-# 展示单个分类下的所有博文
-def category_detail(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-    # 仅获取状态为已发布的文章
-    post_list = Post.objects.filter(category=category, status=Post.PUBLISHED)
-
-    # 分页逻辑
-    paginator = Paginator(post_list, 5)  # 每页显示5篇文章
-    page = request.GET.get('page', 1)  # 获取当前页码
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # 如果页码不是整数，返回第一页
-        posts = paginator.page(1)
-    except EmptyPage:
-        # 如果页码超出范围，返回最后一页
-        posts = paginator.page(paginator.num_pages)
-
-    return render(request, 'category_detail.html', {'category': category, 'posts': posts})
-
-
-
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.PUBLISHED)
-    if request.method == 'POST':
-        post.delete()
-        messages.success(request, "文章已成功删除。")
-        return redirect('blog:my_posts')
-    return HttpResponseForbidden("不允许的操作")
 
 
 
@@ -183,91 +122,12 @@ def edit_post(request, post_id):
 
 
 
-
 def delete_image(request, image_id):
     if request.method == 'DELETE':
         image = get_object_or_404(PostImage, id=image_id)
         image.delete()
         return JsonResponse({'status': 'success'})
 
-
-
-@login_required
-def my_posts(request):
-    post_list = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
-
-    # 分页逻辑
-    paginator = Paginator(post_list, 10)  # 每页显示5篇文章
-    page = request.GET.get('page', 1)  # 获取当前页码
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # 如果页码不是整数，返回第一页
-        posts = paginator.page(1)
-    except EmptyPage:
-        # 如果页码超出范围，返回最后一页
-        posts = paginator.page(paginator.num_pages)
-
-    return render(
-        request,
-        'users/my_posts.html',
-        {
-            'posts': posts,  # 将分页后的文章传递到模板
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
-        }
-    )
-
-
-
-@login_required
-def favorited_posts(request):
-    user = request.user
-    posts = Post.objects.filter(favorited_users=user)
-    return render(
-        request,
-        'users/favorited_posts.html',
-        {
-            'posts': posts,
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
-        }
-    )
-
-
-
-@login_required
-def liked_posts(request):
-    user = request.user
-    posts = Post.objects.filter(liked_users=user)
-    return render(
-        request,
-        'users/liked_posts.html',
-        {
-            'posts': posts,
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
-        }
-    )
-
-
-
-@login_required
-def commented_posts(request):
-    user = request.user
-    # 获取用户评论过的博客
-    commented_post_ids = Comment.objects.filter(user=user).values_list('post_id', flat=True).distinct()
-    posts = Post.objects.filter(id__in=commented_post_ids)
-
-    return render(
-        request,
-        'users/commented_posts.html',
-        {
-            'posts': posts,
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
-        }
-    )
 
 
 
@@ -336,7 +196,6 @@ def edit_draft(request, post_id):
 
 
 
-
 def delete_draft(request, post_id):
     draft = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.DRAFT)
     if request.method == 'POST':
@@ -347,40 +206,22 @@ def delete_draft(request, post_id):
 
 
 
-def search(request):
-    keywords = request.GET.get('keywords')
-    if not keywords:
-        post_list = Post.objects.all()
-    else:
-        post_list = Post.objects.filter(
-            Q(title__icontains=keywords) | Q(content__icontains=keywords) | Q(desc__icontains=keywords),
-            status=Post.PUBLISHED
-        )
-    context = {'post_list': post_list}
+@login_required
+def commented_posts(request):
+    user = request.user
+    # 获取用户评论过的博客
+    commented_post_ids = Comment.objects.filter(user=user).values_list('post_id', flat=True).distinct()
+    posts = Post.objects.filter(id__in=commented_post_ids)
 
-    return render(request, 'index.html', context)
-
-
-def archives(request, year, month):
-    post_queryset = Post.objects.filter(
-        status=Post.PUBLISHED,
-        add_date__year=year,
-        add_date__month=month
+    return render(
+        request,
+        'users/commented_posts.html',
+        {
+            'posts': posts,
+            'active_menu': 'user-info',  # 设置当前活动的菜单
+            'active_link': 'my_posts',  # 设置当前活动的链接
+        }
     )
-
-    # 分页
-    paginator = Paginator(post_queryset, 5)  # 每页 5 篇文章
-    page = request.GET.get('page')
-
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        posts = paginator.page(1)
-    except EmptyPage:
-        posts = paginator.page(paginator.num_pages)
-
-    context = {'posts': posts, 'year': year, 'month': month}
-    return render(request, 'sidebar/archives_list.html', context)
 
 
 
@@ -426,11 +267,10 @@ def favorite_post(request, post_id):
     return JsonResponse({"favorited": favorited, "total_favorites": post.total_favorites()})
 
 
-
-
-def author_profile(request, author_id):
-    author = get_object_or_404(User, id=author_id)
-    posts = Post.objects.filter(owner=author, status='published').order_by('-pub_date')
-    return render(request, 'author_profile.html', {'author': author, 'posts': posts})
-
-
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, owner=request.user, status=Post.PUBLISHED)
+    if request.method == 'POST':
+        post.delete()
+        messages.success(request, "文章已成功删除。")
+        return redirect('blog:my_posts')
+    return HttpResponseForbidden("不允许的操作")
