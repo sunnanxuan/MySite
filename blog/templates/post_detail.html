@@ -235,6 +235,25 @@
             }
         }
 
+        .image-gallery {
+        display: flex;
+        flex-wrap: wrap; /* 自动换行 */
+        gap: 15px; /* 图片间的间距 */
+        justify-content: space-between; /* 图片均匀分布 */
+    }
+
+    .image-item {
+        flex: 1 1 calc(25% - 15px); /* 每个图片占 25% 减去间距 */
+        box-sizing: border-box; /* 包括内边距和边框 */
+    }
+
+    .image-item img {
+        width: 100%; /* 图片占满父容器 */
+        height: auto; /* 保持图片比例 */
+        border-radius: 8px; /* 可选：设置图片圆角 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 可选：图片阴影 */
+    }
+
 
     </style>
 {% endblock %}
@@ -261,20 +280,20 @@
 
         <!-- 展示文章关联的图片 -->
         {% if images %}
-            <div class="post-images">
-                <div class="image-gallery">
-                    {% for image in images %}
-                        <div class="image-item">
-                            <!-- 包裹图片的链接，点击时查看大图 -->
-                            <a href="{{ image.image.url }}" target="_blank">
-                                <img src="{{ image.image.url }}" alt="文章图片" class="img-fluid"
-                                     style="max-width: 300px; height: auto;">
-                            </a>
-                        </div>
-                    {% endfor %}
+    <div class="post-images">
+        <div class="image-gallery">
+            {% for image in images %}
+                <div class="image-item">
+                    <!-- 包裹图片的链接，点击时查看大图 -->
+                    <a href="{{ image.image.url }}" target="_blank">
+                        <img src="{{ image.image.url }}" alt="文章图片" class="img-fluid">
+                    </a>
                 </div>
-            </div>
-        {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
 
 
         <section>
