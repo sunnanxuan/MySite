@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
-from blog.models import Category, Post,Comment,PostImage
+from blog.models import Category, Post,Comment,PostImage, Tag
 from blog.forms import PostForm, PostImageForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
@@ -58,6 +58,9 @@ def category_detail(request, category_id):
         posts = paginator.page(paginator.num_pages)
 
     return render(request, 'category_detail.html', {'category': category, 'posts': posts})
+
+
+
 
 
 

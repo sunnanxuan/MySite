@@ -1,10 +1,14 @@
-<form method="GET" action="{% url 'blog:search' %}" class="search-form">
+<form method="GET" class="search-form">
+    <!-- 共用的输入框 -->
     <input
-            type="text"
-            name="keywords"
-            placeholder="Search posts..."
-            value="{{ request.GET.keywords|default_if_none:'' }}"
-            class="search-input"
+        type="text"
+        name="query"
+        placeholder="Enter keyword or tag name..."
+        value="{{ request.GET.query|default_if_none:'' }}"
+        class="search-input"
     >
-    <button type="submit" class="search-button">搜索</button>
+
+    <!-- 按钮分别指向不同的视图 -->
+    <button type="submit" formaction="{% url 'blog:search' %}" class="search-button">关键字搜索</button>
+    <button type="submit" formaction="{% url 'blog:tag_search' %}" class="search-button">标签搜索</button>
 </form>

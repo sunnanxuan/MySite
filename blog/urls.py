@@ -25,6 +25,7 @@ urlpatterns = [
     path('drafts/delete/<int:post_id>/', post.delete_draft, name='delete_draft'),
 
     path('search/', sidebar.search, name='search'),
+    path('tag_search/', sidebar.tag_search, name='tag_search'),
     path('archives/<int:year>/<int:month>/', sidebar.archives, name='archives'),
 
     path('post/<int:post_id>/comment/', post.add_comment, name='add_comment'),
@@ -36,5 +37,8 @@ urlpatterns = [
     path('my-posts/delete/<int:post_id>/', post.delete_post, name='delete_post'),
 
     path('post/edit/<int:post_id>/', post.edit_post, name='edit_post'),
+
+
+
 
 ]
