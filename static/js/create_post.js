@@ -1,104 +1,12 @@
-{% extends 'layout/user.html' %}
-
-{% block user_content %}
-    <form method="post" enctype="multipart/form-data" id="post-form">
-        {% csrf_token %}
-
-        <!-- 渲染文章内容表单 -->
-        <fieldset>
-            <legend>文章内容</legend>
-            {{ post_form.as_p }}
-        </fieldset>
-
-        <!-- 图片上传表单 -->
-        <fieldset>
-            <legend>上传图片</legend>
-            <div>
-                <!-- 选择文件的按钮 -->
-                <button type="button" class="btn btn-secondary" id="choose-file-btn">选择图片</button>
-
-                <!-- 隐藏的文件选择框 -->
-                <input type="file" name="image" class="form-control post-img" id="image-upload" multiple style="display: none;">  <!-- 允许多选文件 -->
-            </div>
-
-            <!-- 显示已选图片的预览小图 -->
-            <div id="image-previews" class="mt-3">
-                {% for image in draft.images.all %}
-                    <div class="image-preview" data-image-id="{{ image.id }}">
-                        <img src="{{ image.image.url }}" alt="{{ image.image.name }}" title="点击删除此图片">
-                        <button type="button" class="delete-btn" onclick="deleteImage(this)">删除</button>
-                    </div>
-                {% endfor %}
-            </div>
-        </fieldset>
-
-        <!-- 操作按钮 -->
-        <div class="form-group mt-4">
-            <button type="submit" name="publish" class="btn btn-primary">发布</button>
-            <button type="submit" name="save_draft" class="btn btn-secondary">保存为草稿</button>
-            <button type="submit" name="cancel" class="btn btn-secondary">
-                <a href="{% url 'blog:my_posts' %}">取消</a>
-            </button>
-        </div>
-    </form>
-
-    <style>
-        .post-img {
-            margin-bottom: 10px;
-        }
-        #image-previews {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        #image-previews img {
-            max-width: 50px;
-            max-height: 50px;
-            object-fit: cover;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .image-preview {
-            position: relative;
-        }
-        .image-preview img {
-            border: 2px solid transparent;
-        }
-        .image-preview.selected img {
-            border-color: #007bff;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background-color: rgba(255, 0, 0, 0.5);
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-        }
-        .image-preview:hover .delete-btn {
-            display: block;
-        }
-    </style>
-
-    <script>
-        const imageUpload = document.getElementById('image-upload');
+ const imageUpload = document.getElementById('image-upload');
         const imagePreviews = document.getElementById('image-previews');
-        const chooseFileBtn = document.getElementById('choose-file-btn');
-        let selectedFiles = []; // 不去重，允许重复文件
-
-        // 处理点击选择文件按钮，触发文件选择框
-        chooseFileBtn.addEventListener('click', () => {
-            imageUpload.click();  // 触发隐藏的文件选择框
-        });
+        let selectedFiles = [];
 
         // 处理文件选择
         imageUpload.addEventListener('change', () => {
             // 遍历选择的文件
             Array.from(imageUpload.files).forEach(file => {
-                selectedFiles.push(file);  // 保存文件到数组，不去重，允许重复上传相同文件
+                selectedFiles.push(file);  // 保存文件到数组
 
                 // 创建一个新的 FileReader 对象来读取文件
                 const reader = new FileReader();
@@ -165,6 +73,7 @@
 
             // 阻止默认提交，使用自定义的提交方式
             e.preventDefault();
+            console.log('到这了')
 
             // 提交表单
             fetch(this.action, {
@@ -180,5 +89,3 @@
               })
               .catch(error => alert('上传错误，请重试'));
         });
-    </script>
-{% endblock %}
