@@ -75,7 +75,7 @@ def author_profile(request, author_id):
     posts = Post.objects.filter(owner=author, status='published').order_by('-pub_date')
 
     # 添加分页
-    paginator = Paginator(posts, 10)  # 每页显示 10 篇文章
+    paginator = Paginator(posts, 8)  # 每页显示 10 篇文章
     page_number = request.GET.get('page')
     post_list = paginator.get_page(page_number)
 
