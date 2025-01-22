@@ -52,6 +52,10 @@ def create_post(request):
 
             post.save()
 
+            tags = request.POST.getlist('tags')  # 获取选中的标签 ID 列表
+            post.tags.set(tags)  # 将选中的标签与文章关联
+            post.save()
+
             # 获取上传的所有图片文件
             if 'images' in request.FILES:
                 images = request.FILES.getlist('images')  # 获取所有上传的图片文件
@@ -90,6 +94,10 @@ def edit_post(request, post_id):
             if 'publish' in request.POST:
                 post.status = Post.PUBLISHED  # 保证状态为发布
 
+            post.save()
+
+            tags = request.POST.getlist('tags')  # 获取选中的标签 ID 列表
+            post.tags.set(tags)  # 将选中的标签与文章关联
             post.save()
 
             # 删除图片操作
@@ -150,7 +158,6 @@ def edit_draft(request, post_id):
         form = PostForm(request.POST, instance=draft)
         image_form = PostImageForm(request.POST, request.FILES)
 
-        print(request.POST)
 
         if form.is_valid():
             # 保存文章内容
@@ -161,6 +168,10 @@ def edit_draft(request, post_id):
             if 'publish' in request.POST:
                 post.status = Post.PUBLISHED  # 设置文章状态为发布
 
+            post.save()
+
+            tags = request.POST.getlist('tags')  # 获取选中的标签 ID 列表
+            post.tags.set(tags)  # 将选中的标签与文章关联
             post.save()
 
 

@@ -1,6 +1,6 @@
 from django import forms
 from .models import Post, Category, Tag, PostImage
-from django.forms import modelformset_factory
+
 
 
 class PostForm(forms.ModelForm):
@@ -12,9 +12,8 @@ class PostForm(forms.ModelForm):
             'desc': forms.Textarea(attrs={'class': 'form-control', 'placeholder': '请输入描述', 'rows': 2}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': '请输入文章内容', 'rows': 7}),
-            'tags': forms.Select(attrs={'class': 'form-control'}),
+            'tags': forms.SelectMultiple(attrs={'class': 'form-control'}),  # 修改为 SelectMultiple 以支持多选
         }
-
 
 
 
