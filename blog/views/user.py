@@ -79,4 +79,4 @@ def author_profile(request, author_id):
     page_number = request.GET.get('page')
     post_list = paginator.get_page(page_number)
 
-    return render(request, 'author_profile.html', {'author': author, 'post_list': post_list})
+    return render(request, 'users/author_profile.html', {'author': author, 'post_list': post_list})

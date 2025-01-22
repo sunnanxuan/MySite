@@ -71,7 +71,7 @@ def create_post(request):
         post_form = PostForm()
         image_form = PostImageForm()
 
-    return render(request, 'create_post.html', {'post_form': post_form, 'image_form': image_form})
+    return render(request, 'post/create_post.html', {'post_form': post_form, 'image_form': image_form})
 
 
 
@@ -120,7 +120,7 @@ def edit_post(request, post_id):
         form = PostForm(instance=post)
         image_form = PostImageForm()
 
-    return render(request, 'edit_post.html', {
+    return render(request, 'post/edit_post.html', {
         'form': form,
         'post': post,
         'image_form': image_form,
@@ -196,7 +196,7 @@ def edit_draft(request, post_id):
         form = PostForm(instance=draft)
         image_form = PostImageForm()
 
-    return render(request, 'edit_draft.html', {
+    return render(request, 'post/edit_draft.html', {
         'form': form,
         'draft': draft,
         'image_form': image_form,
