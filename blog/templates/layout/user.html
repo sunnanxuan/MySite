@@ -20,7 +20,6 @@
             padding: 0;
 
 
-
         }
 
         /* 左侧 sidebar 样式 */
@@ -164,6 +163,10 @@
                        class="{% if active_link == 'my_posts' %}active-link{% endif %}">个人主页</a></li>
                 <li><a href="{% url 'users:user_profile' %}"
                        class="{% if active_link == 'user_profile' %}active-link{% endif %}">个人信息</a></li>
+                <li><a href="{% url 'users:my_following' %}"
+                       class="{% if active_link == 'my_following' %}active-link{% endif %}">我的关注</a></li>
+                <li><a href="{% url 'users:my_followers' %}"
+                       class="{% if active_link == 'my_followers' %}active-link{% endif %}">我的粉丝</a></li>
                 <li><a href="{% url 'users:account_safety' %}"
                        class="{% if active_link == 'account_safety' %}active-link{% endif %}">账号安全</a></li>
             </ul>

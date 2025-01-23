@@ -1,0 +1,19 @@
+{% extends 'layout/user.html' %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 800px;">
+    <h2 class="mb-4">关注我的用户</h2>
+    <ul class="list-group">
+        {% for user in follower_users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                    <a href="{% url 'blog:author_profile' user.id %}" class="text-decoration-none">{{ user.username }}</a>
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">目前没有用户关注您。</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

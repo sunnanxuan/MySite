@@ -28,5 +28,8 @@ urlpatterns = [
 
     path('<int:user_id>/follow/', users.follow_user, name='follow_user'),
 
+    path('following/', users.my_following, name='my_following'),
+    path('followers/', users.my_followers, name='my_followers'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -55,3 +55,39 @@ def read_message(request, message_id):
     message.is_read = True
     message.save()
     return render(request, 'users/read_message.html', {'message': message})
+
+
+
+
+def my_following(request):
+    """展示当前用户关注的所有用户"""
+    user = request.user
+
+    # 当前用户关注的用户
+    following = user.following.values_list('followed', flat=True)
+    following_users = User.objects.filter(id__in=following)
+
+    return render(request, 'users/my_following.html', {
+        'following_users': following_users,
+        'active_menu': 'user-info',
+        'active_link': 'my_following'
+    })
+
+
+
+
+
+@login_required
+def my_followers(request):
+    """展示所有关注当前用户的用户"""
+    user = request.user
+
+    # 关注当前用户的用户
+    followers = user.followers.values_list('follower', flat=True)
+    follower_users = User.objects.filter(id__in=followers)
+
+    return render(request, 'users/my_followers.html', {
+        'follower_users': follower_users,
+        'active_menu': 'user-info',
+        'active_link': 'my_followers'
+    })
