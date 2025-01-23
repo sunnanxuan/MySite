@@ -1,0 +1,46 @@
+{% extends 'layout/message.html' %}
+
+{% block css %}
+    <style>
+        /* 这里可以添加其他样式 */
+    </style>
+{% endblock %}
+
+{% block user_content %}
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="user-info">
+                <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" class="user-avatar">
+                <h3>{{ user.username }}</h3>
+            </div>
+        </div>
+
+        <div class="chat-box" id="chat-box">
+            {% for message in messages %}
+                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    <div class="message-content">
+                        <p>{{ message.content }}</p>
+                        <small class="message-time">{{ message.sent_at|date:"H:i" }}</small>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="chat-input">
+            <form method="POST" action="{% url 'users:send_message' user.id %}">
+                {% csrf_token %}
+                <textarea name="content" id="message-input" placeholder="输入消息..." required></textarea>
+                <button type="submit" class="send-button">发送</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        // 自动滚动到最新消息
+        const chatBox = document.getElementById('chat-box');
+        chatBox.scrollTop = chatBox.scrollHeight;
+    </script>
+{% endblock %}

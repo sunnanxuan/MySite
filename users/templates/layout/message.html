@@ -1,0 +1,43 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}个人信息{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/user.css' %}">
+    <style>
+        /* 您现有的 CSS 代码 */
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <h3 id="user-info-header" onclick="toggleSubmenu('user-info')"
+                class="{% if active_menu == 'user-info' %}active{% endif %}">消息</h3>
+            <ul id="user-info" class="submenu{% if active_menu == 'user-info' %} active{% endif %}"></ul>
+
+            <h3 id="content-manage-header" onclick="toggleSubmenu('content-manage')"
+                class="{% if active_menu == 'content-manage' %}active{% endif %}">评论</h3>
+            <ul id="content-manage" class="submenu{% if active_menu == 'content-manage' %} active{% endif %}">
+            </ul>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content-wrapper">
+            {% block user_content %}
+
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('active');
+        }
+    </script>
+{% endblock %}

@@ -27,7 +27,7 @@
                             <a href="{% url 'users:follow_user' author.id %}?action=follow"
                                class="btn btn-primary me-2">关注</a>
                         {% endif %}
-                        <a href="{% url 'users:send_message' author.id %}" class="btn btn-secondary">私信留言</a>
+                        <a href="{% url 'users:chat' author.id %}" class="btn btn-secondary">私信留言</a>
                     </div>
 
 

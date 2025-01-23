@@ -1,0 +1,22 @@
+{% extends 'layout/message.html' %}
+
+{% block user_content %}
+  <h1>消息页面</h1>
+
+  <div class="user-list">
+    {% for user in users %}
+      <div class="user-item">
+        <div class="user-avatar">
+          <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" width="50" height="50">
+        </div>
+        <div class="user-info">
+          <h3>{{ user.username }}</h3>
+          <p>{{ user.userprofile.nickname }}</p>
+        </div>
+        <div class="user-actions">
+          <a href="{% url 'users:chat' user.id %}">查看消息</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

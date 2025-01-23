@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from ..models import Follow, User, Message
 from django.shortcuts import render, redirect
+from django.db.models import Q, F
 
 
 
@@ -35,26 +36,53 @@ def send_message_view(request, recipient_id):
     if request.method == "POST":
         content = request.POST.get('content')
         if content:
+            # 使用 send_message 方法发送消息
             Message.send_message(sender=request.user, recipient=recipient, content=content)
-            return redirect('inbox')  # 跳转到收件箱
+            # 发送后跳转到与该用户的聊天页面
+            return redirect('users:chat', user_id=recipient.id)  # 假设 'chat_page' 是聊天页面的 URL 名
 
     return render(request, 'users/send_message.html', {'recipient': recipient})
 
 
-@login_required
-def inbox_view(request):
-    """显示当前用户的收件箱（未读私信）"""
-    unread_messages = Message.get_unread_messages(request.user)
-    return render(request, 'users/inbox.html', {'unread_messages': unread_messages})
+
+
+
+
 
 
 @login_required
-def read_message(request, message_id):
-    """查看私信并标记为已读"""
-    message = get_object_or_404(Message, id=message_id, recipient=request.user)
-    message.is_read = True
-    message.save()
-    return render(request, 'users/read_message.html', {'message': message})
+def message_page(request):
+    # 获取当前用户所有消息的发送者和接收者
+    received_messages = Message.objects.filter(recipient=request.user).values('sender').distinct()
+    sent_messages = Message.objects.filter(sender=request.user).values('recipient').distinct()
+
+    # 获取发送和接收消息的用户
+    user_ids = set()
+    user_ids.update(received_messages.values_list('sender', flat=True))
+    user_ids.update(sent_messages.values_list('recipient', flat=True))
+
+    # 获取所有相关的用户信息
+    users = User.objects.filter(id__in=user_ids)
+
+    context = {
+        'users': users,
+    }
+    return render(request, 'users/message_page.html', context)
+
+
+@login_required
+def chat_page(request, user_id):
+    user = User.objects.get(id=user_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(recipient=user)) |
+        (Q(sender=user) & Q(recipient=request.user))
+    ).order_by('sent_at')
+
+    context = {
+        'messages': messages,
+        'user': user,
+    }
+    return render(request, 'users/chat_page.html', context)
 
 
 
@@ -94,3 +122,9 @@ def my_followers(request):
         'active_link': 'my_followers',
         'following_users': following_users,
     })
+
+
+
+
+
+

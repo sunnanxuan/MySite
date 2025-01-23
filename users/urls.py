@@ -23,11 +23,10 @@ urlpatterns = [
     path("account/change/password", account.change_password, name='change_password'),
 
     path('<int:recipient_id>/message/', users.send_message_view, name='send_message'),
-    path('inbox/', users.inbox_view, name='inbox'),
-    path('message/<int:message_id>/', users.read_message, name='read_message'),
+    path('message/', users.message_page, name='message_page'),
+    path('chat/<int:user_id>/', users.chat_page, name='chat'),
 
     path('<int:user_id>/follow/', users.follow_user, name='follow_user'),
-
     path('following/', users.my_following, name='my_following'),
     path('followers/', users.my_followers, name='my_followers'),
 
