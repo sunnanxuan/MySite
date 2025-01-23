@@ -66,8 +66,15 @@ def message_page(request):
 
     context = {
         'users': users,
+        'active_menu': 'message',
+        'active_link': 'message'
     }
     return render(request, 'users/message_page.html', context)
+
+
+
+
+
 
 
 @login_required
@@ -81,6 +88,8 @@ def chat_page(request, user_id):
     context = {
         'messages': messages,
         'user': user,
+        'active_menu': 'message',
+        'active_link': 'message'
     }
     return render(request, 'users/chat_page.html', context)
 

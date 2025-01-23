@@ -1,22 +1,81 @@
 {% extends 'layout/message.html' %}
 
 {% block user_content %}
-  <h1>消息页面</h1>
+    <h1>消息页面</h1>
 
-  <div class="user-list">
-    {% for user in users %}
-      <div class="user-item">
-        <div class="user-avatar">
-          <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" width="50" height="50">
-        </div>
-        <div class="user-info">
-          <h3>{{ user.username }}</h3>
-          <p>{{ user.userprofile.nickname }}</p>
-        </div>
-        <div class="user-actions">
-          <a href="{% url 'users:chat' user.id %}">查看消息</a>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
+    <div class="user-list">
+        {% for user in users %}
+            <div class="user-item">
+                <div class="user-card" onclick="window.location.href='{% url 'users:chat' user.id %}'">
+                    <div class="user-avatar">
+                        <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" width="50" height="50">
+                    </div>
+                    <div class="user-info">
+                        <p>{{ user.userprofile.nickname }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .user-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        .user-item {
+            flex: 1 1 calc(33.33% - 20px); /* 每行最多3个用户 */
+            max-width: 300px;
+            cursor: pointer;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 600px;
+        }
+
+        .user-card:hover {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-avatar {
+            margin-right: 15px;
+        }
+
+        .user-avatar img {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-info h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+    </style>
+
 {% endblock %}
