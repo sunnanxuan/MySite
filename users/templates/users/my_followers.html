@@ -1,19 +1,62 @@
 {% extends 'layout/user.html' %}
 
-{% block content %}
-<div class="container my-4" style="max-width: 800px;">
-    <h2 class="mb-4">关注我的用户</h2>
-    <ul class="list-group">
-        {% for user in follower_users %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                    <a href="{% url 'blog:author_profile' user.id %}" class="text-decoration-none">{{ user.username }}</a>
-                </div>
-            </li>
-        {% empty %}
-            <li class="list-group-item text-muted">目前没有用户关注您。</li>
-        {% endfor %}
-    </ul>
-</div>
+{% block user_content %}
+    <h2 class="mb-4 text-center">我的粉丝</h2>
+    <div class="container my-4" style="max-width: 1000px;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <tbody>
+                    {% for user in follower_users %} <!-- "followers" 应该是视图传递的粉丝列表 -->
+                        <tr>
+                            <!-- 头像 -->
+                            <td style="width: 10%;">
+                                <img src="{{ user.userprofile.image.url }}"
+                                     alt="{{ user.username }}"
+                                     class="rounded-circle"
+                                     style="width: 60px; height: 60px; object-fit: cover; border: 2px solid #ddd;">
+                            </td>
+                            <!-- 昵称 -->
+                            <td style="width: 30%;">
+                                <a href="{% url 'blog:author_profile' user.id %}"
+                                   class="text-decoration-none text-dark fw-bold">
+                                    {{ user.username }}
+                                </a>
+                            </td>
+                            <!-- 签名 -->
+                            <td style="width: 40%;" class="text-muted">
+                                {{ user.userprofile.signature|default:"这个人很懒，什么都没写。" }}
+                            </td>
+                            <!-- 关注/取消关注按钮 -->
+                            <td style="width: 10%;">
+                                {% if user in following_users %} <!-- 如果当前用户已关注这个粉丝 -->
+                                    <a href="{% url 'users:follow_user' user.id %}?action=unfollow"
+                                       class="btn btn-sm btn-outline-danger">
+                                        取消关注
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'users:follow_user' user.id %}?action=follow"
+                                       class="btn btn-sm btn-outline-success">
+                                        关注
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <!-- 私信按钮 -->
+                            <td style="width: 10%;">
+                                <a href="{% url 'users:send_message' user.id %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    私信
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                您还没有粉丝。
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

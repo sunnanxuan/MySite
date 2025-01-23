@@ -85,9 +85,12 @@ def my_followers(request):
     # 关注当前用户的用户
     followers = user.followers.values_list('follower', flat=True)
     follower_users = User.objects.filter(id__in=followers)
+    following = user.following.values_list('followed', flat=True)
+    following_users = User.objects.filter(id__in=following)
 
     return render(request, 'users/my_followers.html', {
         'follower_users': follower_users,
         'active_menu': 'user-info',
-        'active_link': 'my_followers'
+        'active_link': 'my_followers',
+        'following_users': following_users,
     })
