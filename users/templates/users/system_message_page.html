@@ -17,15 +17,32 @@
         {% endfor %}
     </div>
 
+    <!-- CSRF Token -->
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+
     <script>
+        // 获取 CSRF Token
+        function getCSRFToken() {
+            return document.getElementById('csrf-token').value;
+        }
+
+        // 标记消息为已读
         function mark_as_read(message_id) {
-            fetch(`/mark_as_read/${message_id}/`, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();  // 刷新页面以更新消息状态
-                    }
-                });
+            console.log('到这了')
+            fetch(`mark_as_read/${message_id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken(),  // 将 CSRF token 添加到请求头
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();  // 刷新页面以更新消息状态
+                } else {
+                    alert('标记为已读失败');
+                }
+            });
         }
     </script>
 

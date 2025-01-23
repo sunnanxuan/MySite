@@ -183,7 +183,7 @@ def system_message_page(request):
     context = {
         'system_messages': system_messages,
         'active_menu': 'message',
-        'active_link': 'message'
+        'active_link': 'system-message'
     }
 
     return render(request, 'users/system_message_page.html', context)
@@ -191,13 +191,18 @@ def system_message_page(request):
 
 
 
-@require_POST
-@login_required
-def mark_system_message_as_read(request, message_id):
-    try:
-        message = SystemMessage.objects.get(id=message_id, recipient=request.user)
-        message.mark_as_read()
-        return JsonResponse({'success': True})
-    except SystemMessage.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Message not found'})
 
+@login_required
+def mark_as_read(request, message_id):
+    try:
+        # 获取指定的系统消息
+        message = SystemMessage.objects.get(id=message_id, recipient=request.user)
+
+        # 更新消息状态为已读
+        message.is_read = True
+        message.save()
+
+        return JsonResponse({"success": True})
+
+    except SystemMessage.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Message not found"})

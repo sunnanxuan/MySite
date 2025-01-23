@@ -26,7 +26,7 @@ urlpatterns = [
     path('message/', users.message_page, name='message_page'),
     path('chat/<int:user_id>/', users.chat_page, name='chat'),
     path('system_messages/', users.system_message_page, name='system_message'),
-    path('mark_as_read/<int:message_id>/', users.mark_system_message_as_read, name='mark_system_message_as_read'),
+    path('system_messages/mark_as_read/<int:message_id>/', users.mark_as_read, name='mark_as_read'),
 
     path('<int:user_id>/follow/', users.follow_user, name='follow_user'),
     path('following/', users.my_following, name='my_following'),
