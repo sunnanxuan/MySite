@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.db.models import Q, F
+from utils.send_system_message import send_system_message
+
 
 
 
@@ -250,7 +252,6 @@ def add_comment(request, post_id):
     return redirect("blog:post_detail", post_id=post_id)
 
 
-
 @login_required
 def like_post(request, post_id):
     """点赞博客"""
@@ -261,8 +262,13 @@ def like_post(request, post_id):
     else:
         post.liked_users.add(request.user)  # 添加点赞
         liked = True
-    return JsonResponse({"liked": liked, "total_likes": post.total_likes()})
 
+    # 给文章作者发送点赞通知
+    if liked:
+        message = f"您的文章《{post.title}》被{request.user.username}点赞了！"
+        send_system_message(post.owner, message)
+
+    return JsonResponse({"liked": liked, "total_likes": post.total_likes()})
 
 
 @login_required
@@ -275,7 +281,15 @@ def favorite_post(request, post_id):
     else:
         post.favorited_users.add(request.user)  # 添加收藏
         favorited = True
+
+    # 给文章作者发送收藏通知
+    if favorited:
+        message = f"您的文章《{post.title}》被{request.user.username}收藏了！"
+        send_system_message(post.owner, message)
+
     return JsonResponse({"favorited": favorited, "total_favorites": post.total_favorites()})
+
+
 
 
 def delete_post(request, post_id):

@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.db.models import Q, F
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.utils import timezone
+from utils.send_system_message import send_system_message
 
 
 
@@ -20,6 +22,11 @@ def follow_user(request, user_id):
         # 如果当前用户未关注该作者，执行关注
         if not Follow.objects.filter(follower=current_user, followed=author).exists():
             Follow.objects.create(follower=current_user, followed=author)
+
+            # 给被关注者发送系统消息
+            message = f"用户 {current_user.username} 关注了您！"
+            send_system_message(author, message)  # 发送系统消息给被关注者
+
     elif action == 'unfollow':  # 如果是取消关注操作
         # 如果已经关注，取消关注
         Follow.objects.filter(follower=current_user, followed=author).delete()
@@ -163,10 +170,9 @@ def my_followers(request):
 
 
 
-def send_system_message(recipient, content):
-    """发送系统消息"""
-    system_message = SystemMessage.objects.create(recipient=recipient, content=content)
-    return system_message
+
+
+
 
 
 @login_required
