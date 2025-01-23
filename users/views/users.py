@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from ..models import Follow, User, Message, SystemMessage
 from django.shortcuts import render, redirect
 from django.db.models import Q, F
-from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from django.utils import timezone
 from utils.send_system_message import send_system_message
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Max
+
 
 
 
@@ -59,19 +60,31 @@ def send_message_view(request, recipient_id):
 
 
 
+
+
+
 @login_required
 def message_page(request):
-    # 获取当前用户所有消息的发送者和接收者
-    received_messages = Message.objects.filter(recipient=request.user).values('sender').distinct()
-    sent_messages = Message.objects.filter(sender=request.user).values('recipient').distinct()
+    # 获取当前用户所有收到的消息，按照最新消息的时间排序
+    messages = Message.objects.filter(
+        recipient=request.user
+    ).values('sender').annotate(
+        latest_message_time=Max('sent_at')
+    ).order_by('-latest_message_time')  # 按最新消息时间排序
 
-    # 获取发送和接收消息的用户
-    user_ids = set()
-    user_ids.update(received_messages.values_list('sender', flat=True))
-    user_ids.update(sent_messages.values_list('recipient', flat=True))
-
-    # 获取所有相关的用户信息
+    # 获取每个对话的最新消息
+    user_ids = [message['sender'] for message in messages]
     users = User.objects.filter(id__in=user_ids)
+
+    # 获取每个对话的最后一条消息
+    last_messages = {}
+    last_times={}
+    for user in users:
+        last = Message.objects.filter(
+            sender=user, recipient=request.user
+        ).order_by('-sent_at').first()  # 获取最新的消息对象
+        last_messages[user.id] = last.content
+        last_times[user.id] = last.sent_at
 
     # 检查每个用户发来的未读消息
     unread_counts = {}
@@ -80,13 +93,15 @@ def message_page(request):
         unread_count = Message.objects.filter(recipient=request.user, sender=user, is_read=False).count()
         unread_counts[user.id] = unread_count
 
-
     context = {
         'users': users,
-        'unread_counts': unread_counts,  # 将未读消息数量传递到模板
+        'unread_counts': unread_counts,
+        'last_messages': last_messages,
+        'last_times': last_times,
         'active_menu': 'message',
         'active_link': 'message'
     }
+
     return render(request, 'users/message_page.html', context)
 
 

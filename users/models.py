@@ -130,6 +130,8 @@ class Message(models.Model):
         self.save()
 
 
+
+
 class SystemMessage(models.Model):
     content = models.TextField(verbose_name="消息内容")
     sent_at = models.DateTimeField(auto_now_add=True, verbose_name="发送时间")

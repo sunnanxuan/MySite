@@ -16,6 +16,12 @@
                     </div>
                     <div class="user-info">
                         <p>{{ user.userprofile.nickname }}</p>
+                        <!-- 显示最近一条消息的内容 -->
+                        <small>{{ last_messages|get_item:user.id }}</small>
+                    </div>
+                    <div class="user-time">
+                        <!-- 显示最近一条消息的时间 -->
+                        <small>{{ last_times|get_item:user.id }}</small>
                     </div>
                 </div>
             </div>
@@ -24,29 +30,25 @@
 
     <style>
         .user-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: flex-start;
+            display: block; /* 改为块级布局 */
             padding: 20px;
         }
 
         .user-item {
-            flex: 1 1 calc(33.33% - 20px); /* 每行最多3个用户 */
-            max-width: 300px;
+            margin-bottom: 20px; /* 每个消息框之间的间隔 */
+            width: 100%; /* 每个用户框占满一行 */
             cursor: pointer;
         }
 
         .user-card {
             display: flex;
-            align-items: center;
+            align-items: center; /* 保持水平对齐 */
             padding: 15px;
             background-color: #f9f9f9;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             cursor: pointer;
-            width: 600px;
         }
 
         .user-card:hover {
@@ -56,7 +58,7 @@
         }
 
         .user-avatar {
-            margin-right: 15px;
+            margin-right: 15px; /* 保持头像与昵称之间的间隔 */
             position: relative; /* 为了定位红点 */
         }
 
@@ -65,10 +67,15 @@
             object-fit: cover;
         }
 
-        .user-info h3 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: bold;
+        .user-info {
+            flex: 1;
+            margin-right: 10px; /* 保证昵称和时间之间有间距 */
+        }
+
+        .user-time {
+            font-size: 12px;
+            color: #999;
+            text-align: right; /* 确保时间右对齐 */
         }
 
         .user-info p {
@@ -77,8 +84,9 @@
             color: #666;
         }
 
-        .user-info {
-            flex: 1;
+        .user-info small {
+            font-size: 12px;
+            color: #999;
         }
 
         .unread-dot {
