@@ -130,6 +130,26 @@ class Message(models.Model):
         self.save()
 
 
+class SystemMessage(models.Model):
+    content = models.TextField(verbose_name="消息内容")
+    sent_at = models.DateTimeField(auto_now_add=True, verbose_name="发送时间")
+    is_read = models.BooleanField(default=False, verbose_name="是否已读")
+    recipient = models.ForeignKey(User, related_name='system_messages', on_delete=models.CASCADE,
+                                  verbose_name="接收用户")
+
+    class Meta:
+        verbose_name = "系统消息"
+        verbose_name_plural = "系统消息"
+        ordering = ['-sent_at']  # 按发送时间倒序排列
+
+    def __str__(self):
+        return f"System message to {self.recipient.username} at {self.sent_at}"
+
+    def mark_as_read(self):
+        """将消息标记为已读"""
+        self.is_read = True
+        self.save()
+
 
 
 

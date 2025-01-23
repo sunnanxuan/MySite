@@ -25,6 +25,8 @@ urlpatterns = [
     path('<int:recipient_id>/message/', users.send_message_view, name='send_message'),
     path('message/', users.message_page, name='message_page'),
     path('chat/<int:user_id>/', users.chat_page, name='chat'),
+    path('system_messages/', users.system_message_page, name='system_message'),
+    path('mark_as_read/<int:message_id>/', users.mark_system_message_as_read, name='mark_system_message_as_read'),
 
     path('<int:user_id>/follow/', users.follow_user, name='follow_user'),
     path('following/', users.my_following, name='my_following'),

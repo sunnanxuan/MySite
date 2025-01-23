@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Follow, User, Message
+from ..models import Follow, User, Message, SystemMessage
 from django.shortcuts import render, redirect
 from django.db.models import Q, F
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 
 
@@ -71,7 +73,6 @@ def message_page(request):
         unread_count = Message.objects.filter(recipient=request.user, sender=user, is_read=False).count()
         unread_counts[user.id] = unread_count
 
-    print(unread_counts)
 
     context = {
         'users': users,
@@ -162,5 +163,35 @@ def my_followers(request):
 
 
 
+def send_system_message(recipient, content):
+    """发送系统消息"""
+    system_message = SystemMessage.objects.create(recipient=recipient, content=content)
+    return system_message
 
+
+@login_required
+def system_message_page(request):
+    # 获取当前用户的所有系统消息
+    system_messages = SystemMessage.objects.filter(recipient=request.user).order_by('-sent_at')
+
+    context = {
+        'system_messages': system_messages,
+        'active_menu': 'message',
+        'active_link': 'message'
+    }
+
+    return render(request, 'users/system_message_page.html', context)
+
+
+
+
+@require_POST
+@login_required
+def mark_system_message_as_read(request, message_id):
+    try:
+        message = SystemMessage.objects.get(id=message_id, recipient=request.user)
+        message.mark_as_read()
+        return JsonResponse({'success': True})
+    except SystemMessage.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Message not found'})
 

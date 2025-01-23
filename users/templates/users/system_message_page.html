@@ -1,0 +1,53 @@
+{% extends 'layout/message.html' %}
+
+{% block user_content %}
+    <h1>系统消息</h1>
+
+    <div class="system-message-list">
+        {% for message in system_messages %}
+            <div class="system-message-item{% if not message.is_read %} unread{% endif %}">
+                <div class="message-content">
+                    <p>{{ message.content }}</p>
+                    <small>{{ message.sent_at }}</small>
+                </div>
+                {% if not message.is_read %}
+                    <button onclick="mark_as_read({{ message.id }})">标记为已读</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function mark_as_read(message_id) {
+            fetch(`/mark_as_read/${message_id}/`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();  // 刷新页面以更新消息状态
+                    }
+                });
+        }
+    </script>
+
+    <style>
+        .system-message-item {
+            padding: 15px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .system-message-item.unread {
+            background-color: #f8d7da;
+        }
+        .message-content p {
+            margin: 0;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}

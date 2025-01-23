@@ -162,7 +162,7 @@
             <ul id="message" class="submenu{% if active_menu == 'message' %} active{% endif %}">
                 <li><a href="{% url 'users:message_page' %}"
                        class="{% if active_link == 'message' %}active-link{% endif %}">私信</a></li>
-                <li><a href="#"
+                <li><a href="{% url 'users:system_message' %}"
                        class="{% if active_link == 'system-message' %}active-link{% endif %}">系统消息</a></li>
             </ul>
 
