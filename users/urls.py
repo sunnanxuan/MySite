@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from users.views import account
+from users.views import account, users
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -21,6 +21,12 @@ urlpatterns = [
     path("account/safety", account.account_safety, name='account_safety'),
     path("account/change/email", account.change_email, name='change_email'),
     path("account/change/password", account.change_password, name='change_password'),
+
+    path('<int:recipient_id>/message/', users.send_message_view, name='send_message'),
+    path('inbox/', users.inbox_view, name='inbox'),
+    path('message/<int:message_id>/', users.read_message, name='read_message'),
+
+    path('<int:user_id>/follow/', users.follow_user, name='follow_user'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

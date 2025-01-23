@@ -61,3 +61,66 @@ class EmailVerification(models.Model):
 
 
 
+class Follow(models.Model):
+    follower = models.ForeignKey(User, related_name="following", on_delete=models.CASCADE, verbose_name="关注者")
+    followed = models.ForeignKey(User, related_name="followers", on_delete=models.CASCADE, verbose_name="被关注者")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="关注时间")
+
+    class Meta:
+        verbose_name = "关注"
+        verbose_name_plural = "关注关系"
+        unique_together = ('follower', 'followed')  # 防止重复关注
+
+    def __str__(self):
+        return f"{self.follower.username} 关注 {self.followed.username}"
+
+    @classmethod
+    def is_following(cls, follower, followed):
+        """检查用户是否关注了另一个用户"""
+        return cls.objects.filter(follower=follower, followed=followed).exists()
+
+    @classmethod
+    def follow(cls, follower, followed):
+        """执行关注操作"""
+        if not cls.is_following(follower, followed):
+            return cls.objects.create(follower=follower, followed=followed)
+        return None
+
+    @classmethod
+    def unfollow(cls, follower, followed):
+        """取消关注操作"""
+        cls.objects.filter(follower=follower, followed=followed).delete()
+
+
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE, verbose_name="发信人")
+    recipient = models.ForeignKey(User, related_name="received_messages", on_delete=models.CASCADE, verbose_name="收信人")
+    content = models.TextField(verbose_name="消息内容")
+    sent_at = models.DateTimeField(auto_now_add=True, verbose_name="发送时间")
+    is_read = models.BooleanField(default=False, verbose_name="是否已读")
+
+    class Meta:
+        verbose_name = "私信"
+        verbose_name_plural = "私信"
+        ordering = ['-sent_at']  # 按发送时间倒序排列
+
+    def __str__(self):
+        return f"{self.sender.username} to {self.recipient.username} at {self.sent_at}"
+
+    @classmethod
+    def send_message(cls, sender, recipient, content):
+        """发送私信"""
+        return cls.objects.create(sender=sender, recipient=recipient, content=content)
+
+    @classmethod
+    def get_unread_messages(cls, user):
+        """获取未读的私信"""
+        return cls.objects.filter(recipient=user, is_read=False)
+
+
+
+
+
+

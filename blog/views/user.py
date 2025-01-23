@@ -1,5 +1,7 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
+
+from users.models import Follow
 from ..models import Category, Post,Comment,PostImage
 from ..forms import PostForm, PostImageForm
 from django.contrib.auth.decorators import login_required
@@ -70,13 +72,38 @@ def liked_posts(request):
 
 
 
+
 def author_profile(request, author_id):
+    # 获取作者用户
     author = get_object_or_404(User, id=author_id)
+
+    # 获取作者发布的文章
     posts = Post.objects.filter(owner=author, status='published').order_by('-pub_date')
 
     # 添加分页
-    paginator = Paginator(posts, 8)  # 每页显示 10 篇文章
+    paginator = Paginator(posts, 8)  # 每页显示 8 篇文章
     page_number = request.GET.get('page')
     post_list = paginator.get_page(page_number)
 
-    return render(request, 'users/author_profile.html', {'author': author, 'post_list': post_list})
+    # 获取所有关注该作者的用户
+    followers = User.objects.filter(following__followed=author)
+
+    # 判断当前登录用户是否关注了该作者
+    is_following = False
+    if request.user.is_authenticated:  # 确保用户已登录
+        is_following = Follow.objects.filter(follower=request.user, followed=author).exists()
+
+    # 渲染模板
+    return render(request, 'users/author_profile.html', {
+        'author': author,
+        'post_list': post_list,
+        'followers': followers,
+        'is_following': is_following,  # 当前用户是否关注作者
+    })
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="POST">
+  {% csrf_token %}
+  <textarea name="content" placeholder="输入私信内容..."></textarea>
+  <button type="submit">发送私信</button>
+</form>
+
+
+</body>
+</html>

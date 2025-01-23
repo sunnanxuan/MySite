@@ -26,7 +26,7 @@ def login(request):
 
     if request.method == 'GET':
         form = LoginForm(request)  # 传递 request 参数
-        return render(request, 'login.html', {'form': form})
+        return render(request, 'account/login.html', {'form': form})
 
     form = LoginForm(request, data=request.POST)
     if form.is_valid():
@@ -62,7 +62,7 @@ def register(request):
 
     if request.method == 'GET':
         form = RegisterModelForm()
-        return render(request, 'register.html', {'form': form})
+        return render(request, 'account/register.html', {'form': form})
 
     form = RegisterModelForm(data=request.POST, files=request.FILES)
 
@@ -97,7 +97,7 @@ def register(request):
 
 
 def active(request):
-    return render(request, 'active.html')
+    return render(request, 'account/active.html')
 
 
 
@@ -166,7 +166,7 @@ def editor_users(request):
 
 @login_required(login_url='login')
 def account_safety(request):
-    return render(request, 'account_safety.html', { 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+    return render(request, 'account/account_safety.html', {'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
         'active_link': 'account_safety'})
 
 
@@ -183,17 +183,17 @@ def change_email(request):
             request.user.save()
 
             messages.success(request, '邮箱地址已成功更换！')
-            return render(request, 'account_safety.html', { 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+            return render(request, 'account/account_safety.html', {'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
         'active_link': 'account_safety'})
         else:
             # 表单无效，返回带错误信息的页面
-            return render(request, 'change_email.html', { 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+            return render(request, 'account/change_email.html', {'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
         'active_link': 'account_safety'})
 
     else:
         form = ChangeEmailForm(user=request.user)  # 初始化表单
 
-    return render(request, 'change_email.html', {'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+    return render(request, 'account/change_email.html', {'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
         'active_link': 'account_safety'})
 
 
@@ -213,16 +213,16 @@ def change_password(request):
             update_session_auth_hash(request, request.user)
 
             messages.success(request, '密码修改成功！')
-            return render(request, 'account_safety.html', { 'active_menu': 'user-info', 'active_link': 'account_safety'})
+            return render(request, 'account/account_safety.html', {'active_menu': 'user-info', 'active_link': 'account_safety'})
         else:
             # 如果表单无效，将错误信息显示到页面
-            return render(request, 'change_password.html', {'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+            return render(request, 'account/change_password.html', {'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
         'active_link': 'account_safety'})
 
     else:
         form = ChangePasswordForm(user=request.user)  # 初始化时传递当前用户
 
-    return render(request, 'change_password.html', { 'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
+    return render(request, 'account/change_password.html', {'form': form, 'active_menu': 'user-info',  # 标记为 '个人中心' 菜单
         'active_link': 'account_safety'})
 
 

@@ -21,6 +21,10 @@ python manage.py migrate
 
 
 
+
+
+
+
 class Category(models.Model):
     name = models.CharField(max_length=32, verbose_name="分类名称")
     desc = models.TextField(max_length=200, blank=True, default="", verbose_name="分类描述")
@@ -212,3 +216,7 @@ class PostImage(models.Model):
 
     def __str__(self):
         return f"{self.post.title} 的图片"
+
+
+
+

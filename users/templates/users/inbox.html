@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h2>收件箱</h2>
+<ul>
+  {% for message in unread_messages %}
+    <li>
+      <a href="{% url 'read_message' message.id %}">{{ message.sender.username }} - {{ message.sent_at }}</a>
+    </li>
+  {% endfor %}
+</ul>
+
+
+</body>
+</html>
