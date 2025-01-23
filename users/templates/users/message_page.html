@@ -1,4 +1,5 @@
 {% extends 'layout/message.html' %}
+{% load custom_filters %}
 
 {% block user_content %}
     <h1>消息页面</h1>
@@ -9,6 +10,9 @@
                 <div class="user-card" onclick="window.location.href='{% url 'users:chat' user.id %}'">
                     <div class="user-avatar">
                         <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" width="50" height="50">
+                        {% if unread_counts|get_item:user.id > 0 %}
+                            <span class="unread-dot"></span> <!-- 红点 -->
+                        {% endif %}
                     </div>
                     <div class="user-info">
                         <p>{{ user.userprofile.nickname }}</p>
@@ -53,6 +57,7 @@
 
         .user-avatar {
             margin-right: 15px;
+            position: relative; /* 为了定位红点 */
         }
 
         .user-avatar img {
@@ -74,6 +79,17 @@
 
         .user-info {
             flex: 1;
+        }
+
+        .unread-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: red;
+            border-radius: 50%;
+            border: 2px solid white;
         }
 
     </style>

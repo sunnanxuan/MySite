@@ -119,6 +119,15 @@ class Message(models.Model):
         """获取未读的私信"""
         return cls.objects.filter(recipient=user, is_read=False)
 
+    def mark_as_read(self):
+        """将消息标记为已读"""
+        self.is_read = True
+        self.save()
+
+    def mark_as_unread(self):
+        """将消息标记为未读"""
+        self.is_read = False
+        self.save()
 
 
 
