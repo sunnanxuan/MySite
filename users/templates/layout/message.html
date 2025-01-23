@@ -168,12 +168,10 @@
 
 
             <h3 id="comment-header" onclick="toggleSubmenu('comment')"
-                class="{% if active_menu == 'content-manage' %}active{% endif %}">评论和@</h3>
+                class="{% if active_menu == 'content-manage' %}active{% endif %}">评论</h3>
             <ul id="comment" class="submenu{% if active_menu == 'comment' %} active{% endif %}">
                 <li><a href="{% url 'blog:received_comments' %}"
                        class="{% if active_link == 'comment' %}active-link{% endif %}">评论</a></li>
-                <li><a href="#"
-                       class="{% if active_link == '@' %}active-link{% endif %}">@</a></li>
             </ul>
         </div>
 

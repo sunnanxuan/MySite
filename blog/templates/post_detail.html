@@ -341,21 +341,25 @@
 
     <!-- 评论区 -->
     <div class="comments-section">
-        <h2>评论区</h2>
-        {% if post.comments.exists %}
-            <ul class="comments-list">
-                {% for comment in post.comments.all %}
-                    <li>
-                        <strong>{{ comment.user.username }}</strong>
-                        <time>发表于 {{ comment.created_at|date:"Y年m月d日 H:i" }}</time>
-                        <p>{{ comment.content }}</p>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>暂无评论，快来抢沙发吧！</p>
-        {% endif %}
-    </div>
+    <h2>评论区</h2>
+    {% if post.comments.exists %}
+        <ul class="comments-list">
+            {% for comment in post.comments.all %}
+                <li>
+                    <!-- 评论人的名字可以点击进入用户主页 -->
+                    <strong>
+                        <a href="{% url 'blog:author_profile' comment.user.id %}">{{ comment.user.username }}</a>
+                    </strong>
+                    <time>发表于 {{ comment.created_at|date:"Y年m月d日 H:i" }}</time>
+                    <p>{{ comment.content }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>暂无评论，快来抢沙发吧！</p>
+    {% endif %}
+</div>
+
 
     {% if user.is_authenticated %}
         <div class="comment-form">
