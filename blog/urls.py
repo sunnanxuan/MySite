@@ -29,6 +29,7 @@ urlpatterns = [
     path('archives/<int:year>/<int:month>/', sidebar.archives, name='archives'),
 
     path('post/<int:post_id>/comment/', post.add_comment, name='add_comment'),
+    path('received_comments/', user.received_comments, name='received_comments'),
     path('post/<int:post_id>/like/', post.like_post, name='like_post'),
     path('post/<int:post_id>/favorite/', post.favorite_post, name='favorite_post'),
 

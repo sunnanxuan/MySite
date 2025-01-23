@@ -206,3 +206,7 @@ def mark_as_read(request, message_id):
 
     except SystemMessage.DoesNotExist:
         return JsonResponse({"success": False, "error": "Message not found"})
+
+
+
+

@@ -105,5 +105,24 @@ def author_profile(request, author_id):
 
 
 
+@login_required
+def received_comments(request):
+    # 获取当前用户的所有文章
+    posts = Post.objects.filter(owner=request.user)
+
+    # 获取所有评论过这些文章的评论
+    comments = Comment.objects.filter(post__in=posts).order_by('-created_at')
+
+    context = {
+        'comments': comments,
+        'active_menu': 'comment',
+        'active_link': 'comment'
+    }
+    return render(request, 'users/received_comments.html', context)
+
+
+
+
+
 
 

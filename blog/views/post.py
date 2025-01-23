@@ -299,3 +299,5 @@ def delete_post(request, post_id):
         messages.success(request, "文章已成功删除。")
         return redirect('blog:my_posts')
     return HttpResponseForbidden("不允许的操作")
+
+
