@@ -1,13 +1,9 @@
 {% extends 'layout/message.html' %}
 
-{% block css %}
-    <style>
-        /* 这里可以添加其他样式 */
-    </style>
-{% endblock %}
 
 {% block user_content %}
     <div class="chat-container">
+        <!-- 头部 -->
         <div class="chat-header">
             <div class="user-info">
                 <img src="{{ user.userprofile.image.url }}" alt="{{ user.username }}" class="user-avatar">
@@ -15,32 +11,199 @@
             </div>
         </div>
 
+        <!-- 聊天内容 -->
         <div class="chat-box" id="chat-box">
             {% for message in messages %}
                 <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    <img src="{{ message.sender.userprofile.image.url }}" alt="{{ message.sender.username }}"
+                         class="user-avatar">
                     <div class="message-content">
                         <p>{{ message.content }}</p>
                         <small class="message-time">{{ message.sent_at|date:"H:i" }}</small>
                     </div>
                 </div>
             {% endfor %}
-
         </div>
 
+        <!-- 输入框 -->
         <div class="chat-input">
             <form method="POST" action="{% url 'users:send_message' user.id %}">
                 {% csrf_token %}
-                <textarea name="content" id="message-input" placeholder="输入消息..." required></textarea>
-                <button type="submit" class="send-button">发送</button>
+                <div class="row">
+                    <div class="col-md-11 d-flex justify-content-center align-items-center">
+                        <textarea name="content" id="message-input" class="form-control" placeholder="输入消息..."
+                                  required></textarea>
+                    </div>
+                    <div class="col-md-1 d-flex justify-content-center align-items-center">
+                        <button type="submit" class="send-button btn btn-primary">发送</button>
+                    </div>
+                </div>
             </form>
+
         </div>
     </div>
-{% endblock %}
 
-{% block js %}
+
+    <style>
+        /* 聊天容器，模拟手机屏幕的效果 */
+        .chat-container {
+            width: 800px; /* 增加宽度 */
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+
+        /* 头部区域 */
+        .chat-header {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        /* 聊天内容框 */
+        .chat-box {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #e9ecef;
+        }
+
+        /* 消息气泡 */
+        .message {
+            display: flex;
+            align-items: flex-end;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+            align-self: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+            align-self: flex-start;
+        }
+
+        .message .message-content {
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .message.sent .message-content {
+            background-color: #007bff;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.received .message-content {
+            background-color: #f1f1f1;
+            color: black;
+            border-bottom-left-radius: 0;
+        }
+
+        /* 消息气泡指向箭头 */
+        .message.sent .message-content::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            bottom: 10px;
+            border: 5px solid transparent;
+            border-left-color: #007bff;
+        }
+
+        .message.received .message-content::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            bottom: 10px;
+            border: 5px solid transparent;
+            border-right-color: #f1f1f1;
+        }
+
+        /* 头像 */
+        .message .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 10px;
+        }
+
+        .message.sent .user-avatar {
+            order: 2;
+        }
+
+        /* 输入区域 */
+        .chat-input {
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input textarea {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+            width: 650px;
+        }
+
+        .chat-input .send-button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .chat-input .send-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+
     <script>
         // 自动滚动到最新消息
         const chatBox = document.getElementById('chat-box');
         chatBox.scrollTop = chatBox.scrollHeight;
     </script>
+
 {% endblock %}
