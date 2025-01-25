@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, AbstractUser
 from django.shortcuts import render
 from django.utils.functional import cached_property
 from django.template.loader import render_to_string
+from .middleware import get_current_request, CRequestMiddleware
 
 
 # Create your models here.
@@ -147,10 +148,13 @@ class Sidebar(models.Model):
 
     @property
     def get_content(self):
-        if self.display_type == 1:
-            context = {
 
-            }
+        from django.utils.html import escape
+        request = get_current_request()  # 获取当前请求对象（需额外中间件支持）
+        query = escape(request.GET.get('query', '')) if request else ''  # 安全获取 query
+
+        if self.display_type == 1:
+            context = {'query': query}  # 将 query 传递到模板上下文
             return render_to_string('sidebar/search.html', context=context)
         elif self.display_type == 2:
             context = {

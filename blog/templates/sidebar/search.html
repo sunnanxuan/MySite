@@ -1,10 +1,11 @@
+
 <form method="GET" class="search-form">
     <!-- 共用的输入框 -->
     <input
         type="text"
         name="query"
         placeholder="Enter keyword or tag name..."
-        value="{{ request.GET.query|default_if_none:'' }}"
+        value="{{ query|default_if_none:'' }}"
         class="search-input"
     >
 

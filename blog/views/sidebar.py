@@ -11,14 +11,14 @@ def search(request):
     query = request.GET.get('query')
     if not query:
         # 如果没有输入查询关键字，显示所有文章
-        post_list = Post.objects.all()
+        post_list = Post.objects.filter(status=Post.PUBLISHED)
     else:
         # 根据标题、内容、描述模糊匹配
         post_list = Post.objects.filter(
             Q(title__icontains=query) | Q(content__icontains=query) | Q(desc__icontains=query),
             status=Post.PUBLISHED
         )
-    context = {'post_list': post_list, 'search_type': 'keyword'}
+    context = {'post_list': post_list, 'search_type': 'keyword', 'query': query}
     return render(request, 'index.html', context)
 
 
@@ -49,7 +49,7 @@ def archives(request, year, month):
 
 
 def tag_search(request):
-    query = request.GET.get('query')
+    query = request.GET.get('query', '').strip()  # 确保 query 是字符串
     if not query:
         # 如果没有输入查询关键字，显示所有文章
         post_list = Post.objects.filter(status=Post.PUBLISHED)
@@ -59,5 +59,10 @@ def tag_search(request):
             tags__name__icontains=query,
             status=Post.PUBLISHED
         ).distinct()
-    context = {'post_list': post_list, 'search_type': 'tag'}
+
+    context = {
+        'post_list': post_list,
+        'search_type': 'tag',
+        'query': query  # 将 query 加入上下文
+    }
     return render(request, 'index.html', context)
