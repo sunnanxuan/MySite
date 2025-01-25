@@ -1,3 +1,5 @@
+from cProfile import label
+
 from django import forms
 from django.core.exceptions import ValidationError
 from users.forms.bootstrap import BootStrapForm
@@ -195,3 +197,37 @@ class ChangeEmailForm(forms.Form):
         if User.objects.filter(email=new_email).exists():
             raise ValidationError("该邮箱已被使用。")
         return new_email
+
+
+
+
+class ForgetPwdForm(forms.Form):
+    email = forms.EmailField(label="请输入注册邮箱地址", min_length=4,
+                             widget=forms.EmailInput(attrs={'class': 'input','placeholder':'邮箱'}))
+
+
+
+
+
+class ModifyPwdForm(forms.Form):
+    password = forms.CharField(
+        label="输入新密码",
+        min_length=6,
+        widget=forms.PasswordInput(attrs={'class': 'input', 'placeholder': '输入密码'})
+    )
+    confirm_password = forms.CharField(
+        label="确认新密码",
+        min_length=6,
+        widget=forms.PasswordInput(attrs={'class': 'input', 'placeholder': '确认密码'})
+    )
+
+    def clean_password(self):
+        pwd = self.cleaned_data['password']
+        return pwd
+
+    def clean_confirm_password(self):
+        pwd = self.cleaned_data['password']
+        confirm_pwd = self.cleaned_data['confirm_password']
+        if pwd != confirm_pwd:
+            raise ValidationError('密码不一致')
+        return confirm_pwd

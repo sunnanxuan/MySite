@@ -1,7 +1,7 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 
-{% block title %}用户登录{% endblock %}
+
 
 
 {% block css %}
@@ -19,8 +19,8 @@
 {% block content %}
     <div class="container">
         <div class="account">
-            <div class="title">用户登录</div>
-            <form id="loginForm" method="POST" novalidate>
+            <div class="title">重设密码</div>
+            <form id="ModifyPwdForm" method="POST" novalidate>
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
@@ -31,11 +31,7 @@
                 {% endfor %}
                 <div class="row">
                     <div class="col-xs-4">
-                        <button id='btnSubmit' type="button" class="btn btn-primary">登录</button>
-                    </div>
-                    <div class="col-xs-8" style="font-size: 14px">
-                        <a href="{% url 'users:register' %}">没有账号？点击注册</a> /
-                        <a href="{% url 'users:forget_pwd' %}">找回密码</a>
+                        <button id='btnSubmit' type="button" class="btn btn-primary">提交</button>
                     </div>
 
                 </div>
@@ -59,10 +55,11 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "{% url 'users:login' %}",
-                    data: $('#loginForm').serialize(),
+                    url: "{% url 'users:forget_pwd_url' active_code=active_code %}",
+                    data: $('#ModifyPwdForm').serialize(),
                     dataType: "JSON",
                     success: function (res) {
+
                         if (res.status) {
                             location.href = res.data;
                         } else {

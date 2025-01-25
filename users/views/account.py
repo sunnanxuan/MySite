@@ -1,7 +1,8 @@
-
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
-from users.forms.account import LoginForm, RegisterModelForm,UserProfileForm,ChangePasswordForm,ChangeEmailForm
+from users.forms.account import LoginForm, RegisterModelForm, UserProfileForm, ChangePasswordForm, ChangeEmailForm, \
+    ForgetPwdForm, ModifyPwdForm
 from utils.send_emali import send_register_email
 from users.models import UserProfile, EmailVerification
 from django.contrib.auth import authenticate, login as auth_login
@@ -10,9 +11,15 @@ from django.db.models import Q
 from django.contrib.auth import logout
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.utils.crypto import get_random_string
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
+
 
 
 
@@ -229,18 +236,61 @@ def change_password(request):
 
 
 def forgot_password(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
+    if request.method == 'GET':
+        form = ForgetPwdForm()
+    else:
+        form = ForgetPwdForm(request.POST)
 
-        # 这里处理发送重置密码邮件的逻辑
-        # 例如，通过 email 查找用户并发送重置密码邮件
-        # (具体的密码重置流程可参考 Django 默认的密码重置视图)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            exists = User.objects.filter(email=email).exists()
+            if exists:
+                send_register_email(email, 'retrieve')
+                # 返回 JSON 响应
+                return JsonResponse({'status': True, 'data': reverse('users:success-page')})
+            else:
+                return JsonResponse({'status': False, 'error': {'email': ['该邮箱尚未注册，请前往注册！']}})
+        else:
+            # 返回表单错误
+            return JsonResponse({'status': False, 'error': form.errors})
 
-        messages.success(request, '如果邮箱存在，我们已发送重置密码的邮件。')
-        return redirect('login')  # 重定向到登录页
+    return render(request, 'forgot_password.html', {'form': form})
 
-    return render(request, 'forgot_password.html')
 
+
+
+def forget_pwd_url(request, active_code):
+    if request.method == 'GET':
+        form = ModifyPwdForm()
+    else:
+        form = ModifyPwdForm(request.POST)
+        if form.is_valid():
+            try:
+                record = EmailVerification.objects.get(code=active_code)
+                email = record.email
+                user = User.objects.get(email=email)
+                user.password = make_password(form.cleaned_data.get('password'))
+                user.save()
+                return JsonResponse({'status': True, 'data': reverse('users:reset_success')})
+            except EmailVerification.DoesNotExist:
+                return JsonResponse({'status': False, 'error': '无效的激活码'})
+        else:
+            return JsonResponse({'status': False, 'error': form.errors})
+
+    return render(request, 'reset_pwd.html', {'form': form, 'active_code': active_code})
+
+
+
+
+
+def success_page(request):
+    return render(request, 'account/success-page.html')
+
+
+
+
+def reset_success(request):
+    return render(request, 'account/reset_success.html')
 
 
 

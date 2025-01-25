@@ -147,3 +147,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 LOGIN_URL = '/users/login/'
+
+
+
+from decouple import config
+SENDGRID_API_KEY = config('SENDGRID_API_KEY')

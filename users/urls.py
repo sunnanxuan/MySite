@@ -14,6 +14,12 @@ urlpatterns = [
     path("logout/", account.logout_view, name='logout'),
     path("active/<active_code>", account.active_user, name='active_user'),
     path("active/", account.active, name='active'),
+    path("forget_pwd/", account.forgot_password, name='forget_pwd'),
+    path("forget_pwd_url/<active_code>", account.forget_pwd_url, name='forget_pwd_url'),
+    path("success-page/", account.success_page, name='success-page'),
+    path("reset_success/", account.reset_success, name='reset_success'),
+
+
 
     path("home/", account.user_home, name='user_home'),
     path("profile/", account.user_profile, name='user_profile'),
@@ -21,6 +27,7 @@ urlpatterns = [
     path("account/safety", account.account_safety, name='account_safety'),
     path("account/change/email", account.change_email, name='change_email'),
     path("account/change/password", account.change_password, name='change_password'),
+
 
     path('<int:recipient_id>/message/', users.send_message_view, name='send_message'),
     path('message/', users.message_page, name='message_page'),

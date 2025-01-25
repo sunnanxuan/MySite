@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密码重置成功</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+        .message {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        // 自动跳转到登录页面
+        setTimeout(function () {
+            window.location.href = "{% url 'users:login' %}"; // 替换为你的登录页面 URL
+        }, 5000);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="title">密码重置成功！</div>
+        <div class="message">5秒后将自动跳转到登录页面。</div>
+        <div>
+            如果没有跳转，请 <a href="{% url 'users:login' %}">点击这里</a> 手动跳转。
+        </div>
+    </div>
+</body>
+</html>
