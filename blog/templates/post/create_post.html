@@ -1,184 +1,123 @@
 {% extends 'layout/user.html' %}
 
 {% block user_content %}
-    <form method="post" enctype="multipart/form-data" id="post-form">
+    <form id="addForm" class="form-horizontal" method="post" action="">
         {% csrf_token %}
-
-        <!-- 渲染文章内容表单 -->
-        <fieldset>
-            <legend>文章内容</legend>
-            {{ post_form.as_p }}
-        </fieldset>
-
-        <!-- 图片上传表单 -->
-        <fieldset>
-            <legend>上传图片</legend>
-            <div>
-                <!-- 选择文件的按钮 -->
-                <button type="button" class="btn btn-secondary" id="choose-file-btn">选择图片</button>
-
-                <!-- 隐藏的文件选择框 -->
-                <input type="file" name="image" class="form-control post-img" id="image-upload" multiple style="display: none;">  <!-- 允许多选文件 -->
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}" class="col-md-2 control-label">
+                {{ form.title.label }}
+            </label>
+            <div class="col-md-10">
+                {{ form.title }}
+                <div class="error-msg"></div>
             </div>
-
-            <!-- 显示已选图片的预览小图 -->
-            <div id="image-previews" class="mt-3">
-                {% for image in draft.images.all %}
-                    <div class="image-preview" data-image-id="{{ image.id }}">
-                        <img src="{{ image.image.url }}" alt="{{ image.image.name }}" title="点击删除此图片">
-                        <button type="button" class="delete-btn" onclick="deleteImage(this)">删除</button>
-                    </div>
-                {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.desc.id_for_label }}" class="col-md-2 control-label">
+                {{ form.desc.label }}
+            </label>
+            <div class="col-md-10">
+                {{ form.desc }}
+                <div class="error-msg"></div>
             </div>
-        </fieldset>
-
-        <!-- 操作按钮 -->
+        </div>
+        <div class="form-group clearfix">
+            <div class="col-md-6">
+                <label for="{{ form.category.id_for_label }}" class="col-md-2 control-label">
+                    {{ form.category.label }}
+                </label>
+                <div class="col-md-8">
+                    {{ form.category }}
+                    <div class="error-msg"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="{{ form.tags.id_for_label }}" class="col-md-2 control-label">
+                    {{ form.tags.label }}
+                </label>
+                <div class="col-md-8">
+                    {{ form.tags }}
+                    <div class="error-msg"></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="editor-content" class="col-md-2 control-label">
+                {{ form.content.label }}
+            </label>
+            <div class="col-md-10">
+                <div id="editor-content">{{ form.content.value|default_if_none:'' }}</div>
+                <input type="hidden" name="content" id="hiddenContent">
+                <div class="error-msg">{{ form.content.errors.0 }}</div>
+            </div>
+        </div>
         <div class="form-group mt-4">
-            <button type="submit" name="publish" class="btn btn-primary">发布</button>
+            <!-- 给发布按钮添加 id 用于 AJAX 绑定 -->
+            <button type="submit" id="bindAddSubmit" name="publish" class="btn btn-primary">发布</button>
             <button type="submit" name="save_draft" class="btn btn-secondary">保存为草稿</button>
-            <button type="submit" name="cancel" class="btn btn-secondary">
-                <a href="{% url 'blog:my_posts' %}">取消</a>
-            </button>
+            <a href="{% url 'blog:my_posts' %}" class="btn btn-secondary">取消</a>
         </div>
     </form>
+{% endblock %}
 
-    <style>
-        .post-img {
-            margin-bottom: 10px;
-        }
-        #image-previews {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        #image-previews img {
-            max-width: 50px;
-            max-height: 50px;
-            object-fit: cover;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .image-preview {
-            position: relative;
-        }
-        .image-preview img {
-            border: 2px solid transparent;
-        }
-        .image-preview.selected img {
-            border-color: #007bff;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background-color: rgba(255, 0, 0, 0.5);
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-        }
-        .image-preview:hover .delete-btn {
-            display: block;
-        }
-    </style>
-
+{% block user_js %}
     <script>
-        const imageUpload = document.getElementById('image-upload');
-        const imagePreviews = document.getElementById('image-previews');
-        const chooseFileBtn = document.getElementById('choose-file-btn');
-        let selectedFiles = []; // 不去重，允许重复文件
+        var quillContent = null;
 
-        // 处理点击选择文件按钮，触发文件选择框
-        chooseFileBtn.addEventListener('click', () => {
-            imageUpload.click();  // 触发隐藏的文件选择框
+        $(function () {
+            initQuill();
+            bindAddSubmit();
         });
 
-        // 处理文件选择
-        imageUpload.addEventListener('change', () => {
-            // 遍历选择的文件
-            Array.from(imageUpload.files).forEach(file => {
-                selectedFiles.push(file);  // 保存文件到数组，不去重，允许重复上传相同文件
-
-                // 创建一个新的 FileReader 对象来读取文件
-                const reader = new FileReader();
-
-                reader.onload = function (e) {
-                    // 创建一个新的 div 来包裹 img 元素
-                    const previewDiv = document.createElement('div');
-                    previewDiv.classList.add('image-preview');
-
-                    // 创建一个新的 img 元素来显示预览图
-                    const img = document.createElement('img');
-                    img.src = e.target.result;  // 设置图像源为读取到的结果
-                    img.title = "点击删除此图片";  // 鼠标悬停显示文字
-                    previewDiv.appendChild(img);
-
-                    // 创建删除按钮
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.type = 'button';
-                    deleteBtn.classList.add('delete-btn');
-                    deleteBtn.textContent = 'X';
-                    deleteBtn.onclick = () => deleteImage(deleteBtn);
-                    previewDiv.appendChild(deleteBtn);
-
-                    // 将预览图添加到图片预览区域
-                    imagePreviews.appendChild(previewDiv);
-                };
-
-                // 读取文件数据
-                reader.readAsDataURL(file);
-            });
-        });
-
-        // 删除图片函数
-        function deleteImage(button) {
-            // 找到图片预览的父元素（div），并删除它
-            const previewDiv = button.closest('.image-preview');
-            previewDiv.remove();
-
-            // 删除文件数组中的该图片
-            const index = Array.from(imagePreviews.children).indexOf(previewDiv);
-            selectedFiles.splice(index, 1);  // 从数组中移除该文件
-        }
-
-        // 给已上传的图片添加点击选中效果
-        const uploadedImages = document.querySelectorAll('.image-preview');
-        uploadedImages.forEach(imagePreview => {
-            imagePreview.addEventListener('click', () => {
-                imagePreview.classList.toggle('selected');
-            });
-        });
-
-        // 当表单提交时，将所有选择的文件添加到表单数据中
-        document.getElementById('post-form').addEventListener('submit', function (e) {
-            // 通过 JavaScript 动态添加文件到表单数据中
-            const formData = new FormData(this);
-            selectedFiles.forEach(file => {
-                formData.append('images', file);  // 将所有图片添加到表单数据中
-            });
-
-            const submitButton = document.querySelector('button[type="submit"]:focus');  // 获取被点击的按钮
-            if (submitButton) {
-                formData.append(submitButton.name, submitButton.value || submitButton.textContent.trim());
+        function initQuill() {
+            if (!quillContent) {
+                quillContent = new Quill('#editor-content', {
+                    theme: 'snow',
+                    placeholder: '请输入描述',
+                    modules: {
+                        toolbar: [
+                            [{'header': [1, 2, false]}],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{'list': 'ordered'}, {'list': 'bullet'}],
+                            ['link', 'image'],
+                            ['clean']
+                        ]
+                    }
+                });
             }
 
-            // 阻止默认提交，使用自定义的提交方式
-            e.preventDefault();
+            // 拦截表单默认提交，将编辑器内容写入隐藏域
+            $('#addForm').on('submit', function (e) {
+                e.preventDefault();
+                $('#hiddenContent').val(quillContent.root.innerHTML);
+            });
+        }
 
-            // 提交表单
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      window.location.href = "{% url 'blog:my_posts' %}";
-                  } else {
-                      alert('上传失败了，请重试');
-                  }
-              })
-              .catch(error => alert('上传错误，请重试'));
-        });
+        function bindAddSubmit() {
+            $('#bindAddSubmit').click(function (e) {
+                e.preventDefault();
+                // 更新隐藏域内容
+                $('#hiddenContent').val(quillContent.root.innerHTML);
+                // 清空所有错误提示
+                $("#addForm").find('.error-msg').empty();
+                $.ajax({
+                    url: "{% url 'blog:create_post' %}",
+                    type: 'POST',
+                    data: $('#addForm').serialize(),
+                    dataType: 'JSON',
+                    success: function (res) {
+                        if (res.success) {
+                            // 跳转到文章详情页
+                            location.href = res.detail_url;
+                        } else {
+                            // 展示表单错误信息
+                            $.each(res.error, function (k, v) {
+                                $("#id_" + k).parent().next('.error-msg').text(v[0]);
+                            });
+                        }
+                    }
+                });
+            });
+        }
     </script>
 {% endblock %}

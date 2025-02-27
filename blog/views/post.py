@@ -1,12 +1,13 @@
 
 from django.shortcuts import render, get_object_or_404,redirect
-from ..models import Category, Post,Comment,PostImage
-from ..forms import PostForm, PostImageForm
+from ..models import Post,Comment
+from blog.forms.post import PostForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
-from django.db.models import Q, F
+from django.db.models import F
 from utils.send_system_message import send_system_message
+from django.urls import reverse
 
 
 
@@ -20,16 +21,13 @@ def post_detail(request, post_id):
     Post.objects.filter(id=post_id).update(pv=F('pv') + 1)  # 增加浏览量
     previous_url = request.META.get('HTTP_REFERER', None)
 
-    # 获取文章关联的图片
-    images = post.images.all()
-
     return render(request, 'post_detail.html', {
         'post': post,
         'prev_post': prev_post,
         'next_post': next_post,
-        'images': images,  # 将图片传递到模板
         'previous_url': previous_url,
     })
+
 
 
 
@@ -37,43 +35,30 @@ def post_detail(request, post_id):
 def create_post(request):
     if request.method == 'POST':
         post_form = PostForm(request.POST)
-        image_form = PostImageForm(request.POST, request.FILES)
-
-        # 检查文章表单是否有效
         if post_form.is_valid():
-            # 保存文章内容
             post = post_form.save(commit=False)
             post.owner = request.user
-
-
-            # 检查是否点击了发布按钮
             if 'publish' in request.POST:
-                post.status = Post.PUBLISHED  # 设置文章状态为发布
+                post.status = Post.PUBLISHED
             else:
-                post.status = Post.DRAFT  # 如果没有点击发布按钮，设置为草稿
-
+                post.status = Post.DRAFT
             post.save()
 
-            tags = request.POST.getlist('tags')  # 获取选中的标签 ID 列表
-            post.tags.set(tags)  # 将选中的标签与文章关联
+            tags = request.POST.getlist('tags')
+            post.tags.set(tags)
             post.save()
 
-            # 获取上传的所有图片文件
-            if 'images' in request.FILES:
-                images = request.FILES.getlist('images')  # 获取所有上传的图片文件
-
-                # 保存每张图片到数据库
-                for image in images:
-                    PostImage.objects.create(post=post, image=image)
-
-            # 返回成功响应
-            return JsonResponse({'success': True})
-
+            detail_url = reverse('blog:post_detail', args=[post.id])
+            print(detail_url)
+            return JsonResponse({'success': True, 'detail_url': detail_url})
+        else:
+            return JsonResponse({'success': False, 'error': post_form.errors})
     else:
         post_form = PostForm()
-        image_form = PostImageForm()
+    return render(request, 'post/create_post.html', {'form': post_form})
 
-    return render(request, 'post/create_post.html', {'post_form': post_form, 'image_form': image_form})
+
+
 
 
 
@@ -85,7 +70,6 @@ def edit_post(request, post_id):
 
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
-        image_form = PostImageForm(request.POST, request.FILES)
 
         if form.is_valid():
             # 保存文章内容
@@ -102,41 +86,19 @@ def edit_post(request, post_id):
             post.tags.set(tags)  # 将选中的标签与文章关联
             post.save()
 
-            # 删除图片操作
-            if 'delete_image' in request.POST:
-                delete_image_ids = request.POST.get('delete_image', '').split(',')
-                for image_id in filter(None, delete_image_ids):
-                    image = get_object_or_404(PostImage, id=image_id)
-                    image.delete()
-
-            # 保存新的图片文件
-            if 'images' in request.FILES:
-                images = request.FILES.getlist('images')
-                for image in images:
-                    PostImage.objects.create(post=post, image=image)
-
             # 返回成功响应
             return JsonResponse({'success': True})
 
     else:
         form = PostForm(instance=post)
-        image_form = PostImageForm()
 
     return render(request, 'post/edit_post.html', {
         'form': form,
         'post': post,
-        'image_form': image_form,
         'active_menu': 'content-manage',
         'active_link': 'published_posts'
     })
 
-
-
-def delete_image(request, image_id):
-    if request.method == 'DELETE':
-        image = get_object_or_404(PostImage, id=image_id)
-        image.delete()
-        return JsonResponse({'status': 'success'})
 
 
 
@@ -158,8 +120,6 @@ def edit_draft(request, post_id):
 
     if request.method == 'POST':
         form = PostForm(request.POST, instance=draft)
-        image_form = PostImageForm(request.POST, request.FILES)
-
 
         if form.is_valid():
             # 保存文章内容
@@ -176,36 +136,18 @@ def edit_draft(request, post_id):
             post.tags.set(tags)  # 将选中的标签与文章关联
             post.save()
 
-
-            if 'delete_image' in request.POST:
-                delete_image_ids = request.POST.get('delete_image', '').split(',')
-                for image_id in filter(None, delete_image_ids):
-                    image = get_object_or_404(PostImage, id=image_id)
-                    image.delete()
-
-            # 获取上传的所有图片文件
-            if 'images' in request.FILES:
-                images = request.FILES.getlist('images')  # 获取所有上传的图片文件
-
-                # 保存每张图片到数据库
-                for image in images:
-                    PostImage.objects.create(post=post, image=image)
-
             # 返回成功响应
             return JsonResponse({'success': True})
 
     else:
         form = PostForm(instance=draft)
-        image_form = PostImageForm()
 
     return render(request, 'post/edit_draft.html', {
         'form': form,
         'draft': draft,
-        'image_form': image_form,
         'active_menu': 'content-manage',
         'active_link': 'draft_list'
     })
-
 
 
 

@@ -5,6 +5,9 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/user.css' %}">
+
+    {% block user_css %}
+    {% endblock %}
     <style>
         /* 通用样式 */
         body {
@@ -225,4 +228,7 @@
             submenu.classList.toggle('active');
         }
     </script>
+
+    {% block user_js %}
+        {% endblock %}
 {% endblock %}

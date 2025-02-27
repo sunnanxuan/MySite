@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404,redirect
-from ..models import Category, Post,Comment,PostImage, Tag
-from ..forms import PostForm, PostImageForm
+from ..models import Category, Post
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 

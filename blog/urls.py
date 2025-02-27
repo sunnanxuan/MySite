@@ -21,7 +21,6 @@ urlpatterns = [
 
     path('drafts/', post.draft_list, name='draft_list'),  # 草稿箱
     path('drafts/edit/<int:post_id>/', post.edit_draft, name='edit_draft'),
-    path('delete_image/<int:image_id>/', post.delete_image, name='delete_image'),
     path('drafts/delete/<int:post_id>/', post.delete_draft, name='delete_draft'),
 
     path('search/', sidebar.search, name='search'),
