@@ -52,7 +52,8 @@ def create_post(request):
             return JsonResponse({'success': False, 'error': post_form.errors})
     else:
         post_form = PostForm()
-    return render(request, 'post/create_post.html', {'form': post_form})
+    return render(request, 'post/create_post.html', {'form': post_form,'active_menu': 'content-manage',
+        'active_link': 'create_post'})
 
 
 
@@ -92,8 +93,8 @@ def edit_post(request, post_id):
     return render(request, 'post/edit_post.html', {
         'form': form,
         'post': post,
-        'active_menu': 'content-manage',
-        'active_link': 'published_posts'
+        'active_menu': 'user-info',
+        'active_link': 'my_posts'
     })
 
 
