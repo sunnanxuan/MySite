@@ -83,8 +83,8 @@ def edit_post(request, post_id):
             post.tags.set(tags)  # 将选中的标签与文章关联
             post.save()
 
-            # 返回成功响应
-            return JsonResponse({'success': True})
+            url = reverse('blog:post_detail', args=[post.id])
+            return JsonResponse({'success': True, 'url': url})
 
     else:
         form = PostForm(instance=post)
