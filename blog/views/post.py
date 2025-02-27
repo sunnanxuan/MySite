@@ -38,19 +38,23 @@ def create_post(request):
         if post_form.is_valid():
             post = post_form.save(commit=False)
             post.owner = request.user
+            # 根据提交类型设置状态
             if 'publish' in request.POST:
                 post.status = Post.PUBLISHED
             else:
                 post.status = Post.DRAFT
+            # 先保存 post 对象，确保有主键
             post.save()
-
+            # 再设置多对多关系
             tags = request.POST.getlist('tags')
             post.tags.set(tags)
-            post.save()
-
-            detail_url = reverse('blog:post_detail', args=[post.id])
-            print(detail_url)
-            return JsonResponse({'success': True, 'detail_url': detail_url})
+            # 根据提交类型返回不同的跳转 URL
+            if 'publish' in request.POST:
+                url = reverse('blog:post_detail', args=[post.id])
+                return JsonResponse({'success': True, 'url': url})
+            else:
+                url = reverse('blog:draft_list')
+                return JsonResponse({'success': True, 'url': url})
         else:
             return JsonResponse({'success': False, 'error': post_form.errors})
     else:

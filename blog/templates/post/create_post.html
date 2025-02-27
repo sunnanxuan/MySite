@@ -52,8 +52,9 @@
             </div>
         </div>
         <div class="form-group mt-4">
-            <!-- 给发布按钮添加 id 用于 AJAX 绑定 -->
+            <!-- 发布按钮，点击后会追加 publish 参数 -->
             <button type="submit" id="bindAddSubmit" name="publish" class="btn btn-primary">发布</button>
+            <!-- 保存草稿按钮，只会追加 save_draft 参数 -->
             <button type="submit" name="save_draft" class="btn btn-secondary">保存为草稿</button>
             <a href="{% url 'blog:my_posts' %}" class="btn btn-secondary">取消</a>
         </div>
@@ -66,9 +67,11 @@
 
         $(function () {
             initQuill();
-            bindAddSubmit();
+            bindSubmit();
+            submitForm(actionName);
         });
 
+        // 初始化富文本编辑器（Quill）
         function initQuill() {
             if (!quillContent) {
                 quillContent = new Quill('#editor-content', {
@@ -85,38 +88,54 @@
                     }
                 });
             }
+        }
 
-            // 拦截表单默认提交，将编辑器内容写入隐藏域
-            $('#addForm').on('submit', function (e) {
+        // 绑定两个按钮的点击事件，根据点击的按钮决定提交的数据中追加哪个参数
+        function bindSubmit() {
+            // 点击“发布”按钮时
+            $('#bindAddSubmit').click(function(e) {
                 e.preventDefault();
-                $('#hiddenContent').val(quillContent.root.innerHTML);
+                submitForm('publish');
+            });
+
+            // 点击“保存为草稿”按钮时
+            $("button[name='save_draft']").click(function(e) {
+                e.preventDefault();
+                submitForm('save_draft');
             });
         }
 
-        function bindAddSubmit() {
-            $('#bindAddSubmit').click(function (e) {
-                e.preventDefault();
-                // 更新隐藏域内容
-                $('#hiddenContent').val(quillContent.root.innerHTML);
-                // 清空所有错误提示
-                $("#addForm").find('.error-msg').empty();
-                $.ajax({
-                    url: "{% url 'blog:create_post' %}",
-                    type: 'POST',
-                    data: $('#addForm').serialize(),
-                    dataType: 'JSON',
-                    success: function (res) {
-                        if (res.success) {
-                            // 跳转到文章详情页
-                            location.href = res.detail_url;
-                        } else {
-                            // 展示表单错误信息
-                            $.each(res.error, function (k, v) {
-                                $("#id_" + k).parent().next('.error-msg').text(v[0]);
-                            });
-                        }
+        // 提交表单数据的通用函数
+        function submitForm(actionName) {
+            // 更新隐藏域内容：将编辑器内容写入隐藏域
+            $('#hiddenContent').val(quillContent.root.innerHTML);
+            // 清空所有错误提示
+            $("#addForm").find('.error-msg').empty();
+
+            // 序列化表单数据
+            var dataArray = $('#addForm').serializeArray();
+            // 根据点击的按钮追加相应的参数
+            dataArray.push({name: actionName, value: "1"});
+
+            $.ajax({
+                url: "{% url 'blog:create_post' %}",
+                type: 'POST',
+                data: $.param(dataArray),
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.success) {
+                        // 成功后跳转到相应页面
+                        location.href = res.url;
+                    } else {
+                        // 展示表单错误信息
+                        $.each(res.error, function (k, v) {
+                            $("#id_" + k).parent().next('.error-msg').text(v[0]);
+                        });
                     }
-                });
+                },
+                error: function() {
+                    alert('提交错误，请重试');
+                }
             });
         }
     </script>
