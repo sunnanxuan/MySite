@@ -46,7 +46,7 @@
                 {{ form.content.label }}
             </label>
             <div class="col-md-10">
-                <div id="editor-content">{{ form.content.value|default_if_none:'' }}</div>
+                <div id="editor-content">{{ form.content.value|default_if_none:""|safe }}</div>
                 <input type="hidden" name="content" id="hiddenContent">
                 <div class="error-msg">{{ form.content.errors.0 }}</div>
             </div>

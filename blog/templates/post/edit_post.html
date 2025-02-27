@@ -47,3 +47,39 @@
         });
     </script>
 {% endblock %}
+
+
+{% block user_js %}
+
+    <script>
+        // 当表单提交时，处理表单数据
+        document.getElementById('edit-post-form').addEventListener('submit', function (e) {
+            e.preventDefault();  // 阻止默认表单提交
+
+            const formData = new FormData(this);
+
+            const submitButton = document.querySelector('button[type="submit"]:focus');  // 获取被点击的按钮
+            if (submitButton) {
+                formData.append(submitButton.name, submitButton.value || submitButton.textContent.trim());
+            }
+
+            // 提交表单数据
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "{% url 'blog:my_posts' %}";
+                    } else {
+                        alert('上传失败了，请重试');
+                    }
+                })
+                .catch(error => alert('上传错误，请重试'));
+        });
+    </script>
+
+
+{% endblock %}
+

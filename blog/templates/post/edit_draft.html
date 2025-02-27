@@ -46,13 +46,16 @@
                 {{ form.content.label }}
             </label>
             <div class="col-md-10">
-                <div id="editor-content">{{ form.content.value|default_if_none:'' }}</div>
+                <!-- 使用 safe 过滤器确保之前保存的 HTML（包括图片标签）正常渲染 -->
+                <div id="editor-content">{{ form.content.value|default_if_none:""|safe }}</div>
                 <input type="hidden" name="content" id="hiddenContent">
                 <div class="error-msg">{{ form.content.errors.0 }}</div>
             </div>
         </div>
         <div class="form-group mt-4">
+            <!-- 发布按钮：提交时会附加 publish 参数 -->
             <button type="submit" id="bindEditSubmit" name="publish" class="btn btn-primary">发布</button>
+            <!-- 保存为草稿按钮：提交时附加 save_draft 参数 -->
             <button type="submit" name="save_draft" class="btn btn-secondary">保存到草稿</button>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">删除草稿</button>
             <a href="{% url 'blog:draft_list' %}" class="btn btn-secondary">取消</a>
@@ -100,6 +103,8 @@
 
         function initQuill() {
             if (!quillContent) {
+                // 获取原始内容（含图片标签等）
+                var initialHtml = $("#editor-content").html();
                 quillContent = new Quill('#editor-content', {
                     theme: 'snow',
                     placeholder: '请输入描述',
@@ -113,6 +118,8 @@
                         ]
                     }
                 });
+                // 将已有的 HTML 内容写入编辑器，确保图片等内容正确解析
+                quillContent.clipboard.dangerouslyPasteHTML(initialHtml);
             }
             // 拦截表单默认提交，将编辑器内容写入隐藏域
             $('#editForm').on('submit', function (e) {
@@ -122,30 +129,47 @@
         }
 
         function bindEditSubmit() {
-            $('#bindEditSubmit').click(function (e) {
+            // 处理“发布”按钮点击
+            $('#bindEditSubmit').click(function(e) {
                 e.preventDefault();
-                // 更新隐藏域内容
-                $('#hiddenContent').val(quillContent.root.innerHTML);
-                // 清空所有错误提示
-                $("#editForm").find('.error-msg').empty();
-                $.ajax({
-                    url: $("#editForm").attr('action'),
-                    type: 'POST',
-                    data: $("#editForm").serialize(),
-                    dataType: 'JSON',
-                    success: function (res) {
-                        if (res.success) {
-                            window.location.href = "{% url 'blog:my_posts' %}";
-                        } else {
-                            $.each(res.error, function (k, v) {
-                                $("#id_" + k).parent().next('.error-msg').text(v[0]);
-                            });
-                        }
-                    },
-                    error: function() {
-                        alert('提交错误，请重试');
+                submitEditForm('publish');
+            });
+            // 处理“保存到草稿”按钮点击
+            $("button[name='save_draft']").click(function(e) {
+                e.preventDefault();
+                submitEditForm('save_draft');
+            });
+        }
+
+        // 通用提交函数，根据传入的 actionName（publish 或 save_draft）追加对应参数
+        function submitEditForm(actionName) {
+            // 同步编辑器内容到隐藏域
+            $('#hiddenContent').val(quillContent.root.innerHTML);
+            // 清空错误信息
+            $("#editForm").find('.error-msg').empty();
+
+            // 序列化表单数据
+            var dataArray = $("#editForm").serializeArray();
+            // 根据点击的按钮追加对应参数
+            dataArray.push({name: actionName, value: "1"});
+
+            $.ajax({
+                url: $("#editForm").attr('action'),
+                type: 'POST',
+                data: $.param(dataArray),
+                dataType: 'JSON',
+                success: function(res) {
+                    if (res.success) {
+                        window.location.href = res.url;
+                    } else {
+                        $.each(res.error, function(k, v) {
+                            $("#id_" + k).parent().next('.error-msg').text(v[0]);
+                        });
                     }
-                });
+                },
+                error: function() {
+                    alert('提交错误，请重试');
+                }
             });
         }
     </script>
