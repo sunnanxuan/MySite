@@ -107,8 +107,26 @@ def edit_post(request, post_id):
 @login_required
 def draft_list(request):
     # 获取当前用户的草稿列表
-    drafts = Post.objects.filter(owner=request.user, status=Post.DRAFT).order_by('-add_date')
-    return render(request, 'draft_list.html', { 'drafts': drafts, 'active_menu': 'content-manage', 'active_link': 'draft_list'})
+    draft_queryset = Post.objects.filter(owner=request.user, status=Post.DRAFT).order_by('-add_date')
+    total_count = draft_queryset.count()
+    page = request.GET.get('page', 1)
+    per_page = 10  # 每页显示 5 篇草稿
+
+    # 使用自定义分页插件
+    pagination = Pagination(page, total_count, request.path_info, request.GET, per_page=per_page)
+    drafts = draft_queryset[pagination.start:pagination.end]
+    page_html = pagination.page_html()
+
+    return render(
+        request,
+        'draft_list.html',
+        {
+            'drafts': drafts,        # 分页后的草稿列表
+            'page_html': page_html,    # 分页插件生成的 HTML
+            'active_menu': 'content-manage',
+            'active_link': 'draft_list'
+        }
+    )
 
 
 

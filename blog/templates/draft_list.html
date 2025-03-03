@@ -1,20 +1,46 @@
 {% extends 'layout/user.html' %}
 
 {% block user_content %}
-    <h1>草稿箱</h1>
-    <ul>
-        {% for draft in drafts %}
-            <li>
-                <strong>{{ draft.title }}</strong> (创建于：{{ draft.add_date|date:"Y-m-d H:i" }})
-                <a href="{% url 'blog:edit_draft' draft.id %}">继续编辑</a>
-            </li>
-        {% empty %}
-            <p>暂无草稿。</p>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'blog:index' %}" class="btn btn-secondary">返回首页</a>
-{% endblock %}
+    <div class="container my-4" style="max-width: 800px;margin-top: 60px">
+        {% if drafts %}
+            <table class="table" id="draftTable" style="width: 800px; margin: auto;">
+                <tbody>
+                {% for draft in drafts %}
+                    <tr>
+                        <td>{{ draft.title }}</td>
+                        <td>{{ draft.add_date|date:"Y-m-d H:i" }}</td>
+                        <td class="text-right">
+                            <a href="{% url 'blog:edit_draft' draft.id %}" class="btn btn-primary btn-sm">
+                                继续编辑
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
+        {% else %}
+            <div class="alert alert-info mt-3" role="alert">
+                暂无草稿。
+            </div>
+        {% endif %}
+    </div>
+    <!-- 分页区域放在表格下方 -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {{ page_html|safe }}
+        </ul>
+    </nav>
+
+
+    <style>
+        /* 为表格每一行添加下边框 */
+        #draftTable tbody tr {
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+
+{% endblock %}
 
 {% block nav %}
 {% endblock %}
