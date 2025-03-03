@@ -2,6 +2,7 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from blog.models import Category, Post,Comment,Tag
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.pagination import Pagination
 
 
 
@@ -9,21 +10,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def index(request):
     # 获取已发布的文章
     post_list = Post.objects.filter(status=Post.PUBLISHED)
+    total_count = post_list.count()
+    page = request.GET.get('page', 1)  # 如果没有提供则默认为第一页
+    per_page = 5  # 每页显示 5 篇文章
 
-    # 设置每页显示文章数
-    paginator = Paginator(post_list, 5)  # 每页 5 篇文章
-    page = request.GET.get('page')  # 获取当前页码
+    # 使用自定义分页插件（请确保 Pagination 类已正确导入）
+    pagination = Pagination(page, total_count, request.path_info, request.GET, per_page=per_page)
+    posts = post_list[pagination.start:pagination.end]
+    page_html = pagination.page_html()
 
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        posts = paginator.page(1)  # 如果页码不是整数，返回第一页
-    except EmptyPage:
-        posts = paginator.page(paginator.num_pages)  # 如果超出页码范围，返回最后一页
-
-    # 渲染模板并传递分页后的文章列表
-    context = {'post_list': posts}
+    context = {
+        'post_list': posts,   # 分页后的文章列表
+        'page_html': page_html  # 分页插件生成的 HTML
+    }
     return render(request, 'index.html', context)
+
 
 
 

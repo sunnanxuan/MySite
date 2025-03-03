@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.db.models import F
 from utils.send_system_message import send_system_message
 from django.urls import reverse
+from utils.pagination import Pagination
+
 
 
 
@@ -161,19 +163,29 @@ def delete_draft(request, post_id):
 @login_required
 def commented_posts(request):
     user = request.user
-    # 获取用户评论过的博客
+    # 获取用户评论过的博客ID，并按照发布时间倒序排序
     commented_post_ids = Comment.objects.filter(user=user).values_list('post_id', flat=True).distinct()
-    posts = Post.objects.filter(id__in=commented_post_ids)
+    post_list = Post.objects.filter(id__in=commented_post_ids).order_by('-pub_date')
+    total_count = post_list.count()
+    page = request.GET.get('page', 1)
+    per_page = 5  # 每页显示 5 篇文章
+
+    # 使用自定义分页插件
+    pagination = Pagination(page, total_count, request.path_info, request.GET, per_page=per_page)
+    posts = post_list[pagination.start:pagination.end]
+    page_html = pagination.page_html()
 
     return render(
         request,
         'users/commented_posts.html',
         {
-            'posts': posts,
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
+            'posts': posts,              # 分页后的文章列表
+            'page_html': page_html,        # 分页插件生成的 HTML
+            'active_menu': 'user-info',    # 当前活动的菜单
+            'active_link': 'commented_posts',  # 当前活动的链接（请根据需要调整）
         }
     )
+
 
 
 

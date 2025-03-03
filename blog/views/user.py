@@ -6,32 +6,30 @@ from ..models import Category, Post,Comment
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
+from utils.pagination import Pagination
 
 
 
 @login_required
 def my_posts(request):
     post_list = Post.objects.filter(owner=request.user, status=Post.PUBLISHED).order_by('-pub_date')
+    total_count = post_list.count()
+    page = request.GET.get('page', 1)
+    per_page = 5
 
-    # 分页逻辑
-    paginator = Paginator(post_list, 10)  # 每页显示5篇文章
-    page = request.GET.get('page', 1)  # 获取当前页码
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # 如果页码不是整数，返回第一页
-        posts = paginator.page(1)
-    except EmptyPage:
-        # 如果页码超出范围，返回最后一页
-        posts = paginator.page(paginator.num_pages)
+    # 使用自定义分页插件
+    pagination = Pagination(page, total_count, request.path_info, request.GET, per_page=per_page)
+    posts = post_list[pagination.start:pagination.end]
+    page_html = pagination.page_html()
 
     return render(
         request,
         'users/my_posts.html',
         {
-            'posts': posts,  # 将分页后的文章传递到模板
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
+            'posts': posts,              # 分页后的文章列表
+            'active_menu': 'user-info',    # 当前活动的菜单
+            'active_link': 'my_posts',     # 当前活动的链接
+            'page_html': page_html,        # 分页插件生成的 HTML
         }
     )
 
@@ -40,32 +38,55 @@ def my_posts(request):
 @login_required
 def favorited_posts(request):
     user = request.user
-    posts = Post.objects.filter(favorited_users=user)
+    # 先按发布时间倒序排序收藏的博客
+    post_list = Post.objects.filter(favorited_users=user).order_by('-pub_date')
+    total_count = post_list.count()
+    page = request.GET.get('page', 1)
+    per_page = 5  # 每页显示 5 篇文章
+
+    # 使用自定义分页插件
+    pagination = Pagination(page, total_count, request.path_info, request.GET, per_page=per_page)
+    posts = post_list[pagination.start:pagination.end]
+    page_html = pagination.page_html()
+
     return render(
         request,
         'users/favorited_posts.html',
         {
-            'posts': posts,
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
+            'posts': posts,              # 分页后的文章列表
+            'page_html': page_html,        # 分页插件生成的 HTML
+            'active_menu': 'user-info',    # 当前活动的菜单
+            'active_link': 'favorited_posts',  # 当前活动的链接（请根据需要调整）
         }
     )
+
 
 
 
 @login_required
 def liked_posts(request):
     user = request.user
-    posts = Post.objects.filter(liked_users=user)
+    post_list = Post.objects.filter(liked_users=user).order_by('-pub_date')
+    total_count = post_list.count()
+    page = request.GET.get('page', 1)
+    per_page = 5
+
+    # 使用自定义分页插件
+    pagination = Pagination(page, total_count, request.path_info, request.GET, per_page=per_page)
+    posts = post_list[pagination.start:pagination.end]
+    page_html = pagination.page_html()
+
     return render(
         request,
         'users/liked_posts.html',
         {
-            'posts': posts,
-            'active_menu': 'user-info',  # 设置当前活动的菜单
-            'active_link': 'my_posts',  # 设置当前活动的链接
+            'posts': posts,              # 分页后的文章列表
+            'page_html': page_html,        # 分页插件生成的 HTML
+            'active_menu': 'user-info',    # 设置当前活动的菜单
+            'active_link': 'liked_posts',  # 设置当前活动的链接（可根据实际情况调整）
         }
     )
+
 
 
 

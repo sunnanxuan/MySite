@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="{% url 'blog:post_detail' post.id %}" class="h5 text-dark text-decoration-none">
+                            {{ post.title }}
+                        </a>
+                        <span class="text-muted ml-3 small">
+                            {{ post.pub_date|date:"Y-m-d H:i" }}
+                        </span>
+
+</body>
+</html>

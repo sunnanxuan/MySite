@@ -1,27 +1,71 @@
 {% extends 'layout/user.html' %}
 
-        {% block nav %}
-            <ul class="nav nav-tabs">
-                <li role="presentation" ><a href="{% url 'blog:my_posts' %}">博客</a></li>
-                <li role="presentation" class="active"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
-                <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
-                <li role="presentation"><a href="{% url 'blog:commented_posts' %}">评论过</a></li>
-            </ul>
-            {% endblock %}
+{% block nav %}
+    <ul class="nav nav-tabs">
+        <li role="presentation"><a href="{% url 'blog:my_posts' %}">博客</a></li>
+        <li role="presentation" class="active"><a href="{% url 'blog:favorited_posts' %}">收藏</a></li>
+        <li role="presentation"><a href="{% url 'blog:liked_posts' %}">赞过</a></li>
+        <li role="presentation"><a href="{% url 'blog:commented_posts' %}">评论过</a></li>
+    </ul>
+{% endblock %}
 
 {% block blogs %}
-    <div class="container">
-        <!-- 显示博客内容 -->
+    <div class="container my-4" style="max-width: 960px;">
         {% if posts %}
-            <ul>
-                {% for post in posts %}
-                    <li>
-                        <a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
+            <table class="table" id="blogTable">
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'blog:post_detail' post.id %}" class="title-link">
+                                    {{ post.title }}
+                                </a>
+                            </td>
+                            <td class="pub-date">
+                                {{ post.pub_date|date:"Y-m-d H:i" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
             <p>你还没有收藏任何博客。</p>
         {% endif %}
     </div>
+
+    <!-- 翻页部分：直接使用分页插件生成的 HTML -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {{ page_html|safe }}
+        </ul>
+    </nav>
+
+    <style>
+        /* 标题：加粗的黑色字体 */
+        .title-link {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            color: #000;
+            font-size: 1.5rem;
+        }
+        /* 发布时间：更小的灰色字体 */
+        .pub-date {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        /* 表格样式：设置宽度、仅显示每行的下边框 */
+        #blogTable {
+            width: 860px;
+            border-collapse: collapse;
+            background-color: transparent !important;
+        }
+        #blogTable th,
+        #blogTable td {
+            border: none !important;
+            background-color: transparent !important;
+        }
+        #blogTable tbody tr {
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
 {% endblock %}
